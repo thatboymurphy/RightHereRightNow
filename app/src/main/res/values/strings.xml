@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Right Here Right Now</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_place_details">Place Details</string>
+    <string name="title_activity_place_selected">Place Selected</string>
+    <string name="title_activity_List_Places">List of POI</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="add_fav">Add To Favs</string>
+    <string name="remove_fav">Remove From Favs</string>
+</resources>

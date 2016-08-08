@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "946907314144",
+    "project_id": "advance-archery-137723"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946907314144:android:84c9acebaebed18a",
+        "android_client_info": {
+          "package_name": "com.stuart.righthererightnow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "946907314144-jqnc5serd9lnbo9ebebstct4pv25889k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.stuart.righthererightnow",
+            "certificate_hash": "E7272574C6744E08D4436FC635E3854BA045E28C"
+          }
+        },
+        {
+          "client_id": "946907314144-nv9vuv70nra9ku6u44q33c2ipponro1u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdHQQbEmDjidroT-pCXnqQizDW6G_IxUg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
