@@ -1,3 +1,15 @@
+/*
+* Author: Stuart Murphy
+* Student ID: 10046828
+* Project: Masters Thesis
+* Date: 08/08/2016
+*
+* Description:
+* The following code is work in progress for my mobile application presentation. It is due
+* completion before the 29th of August 2016. This is for supervisors viewing only to see how the
+* code is currently looking.
+* */
+
 package com.stuart.righthererightnow;
 
 import android.Manifest;
