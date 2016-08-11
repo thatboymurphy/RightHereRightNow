@@ -404,9 +404,53 @@ public class SplashScreen extends Activity implements LocationListener {
                         e.printStackTrace();
                     }
 
+                    int poiIcon = 0;
 
-                    Places newPOI = new Places(name, allTypes, address, "null", new LatLng(Double.parseDouble(locationLat),Double.parseDouble(locationLng)), myImg);
-                    masterList.add(newPOI);
+                    if (allTypes[0].equals("Bar")|| allTypes[0].equals("Night Club"))
+                    {
+                        poiIcon = R.drawable.beerblack;
+                    }
+                    else if (allTypes[0].equals("Restaurant"))
+                    {
+                        poiIcon = R.drawable.foodblack;
+                    }
+                    else if (allTypes[0].equals("Cafe"))
+                    {
+                        poiIcon = R.drawable.coffeeblack;
+                    }
+                    else
+                    {
+                        poiIcon = R.drawable.otherblack;
+                    }
+
+                    // Notihng is on list...add away
+                    if(masterList.size() <= 0){
+                        Places newPOI = new Places(name, allTypes, address, "null", new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), myImg, poiIcon);
+                        masterList.add(newPOI);
+
+                    }
+
+                    // To avoid adding duplicates i.e. some pubs are also restaurants
+                    else{
+                        boolean isOnList = false;
+                        for (Places place : masterList) {
+
+                            if (place.getPlaceName().equals(name)) {
+                                isOnList = true;
+                                break;
+                            }
+
+                        }
+                        // Only add it if it is not already on the list
+                        if(!isOnList){
+                            Places newPOI = new Places(name, allTypes, address, "null", new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), myImg,poiIcon);
+                            masterList.add(newPOI);
+
+                        }
+                    }
+
+
+
                     Log.i("Counter", jsonCounter + "\n");
                     // Log.i("LatLng", locationLat + " " + locationLng + "\n");
                     Log.i("Location Name",name + "\n");

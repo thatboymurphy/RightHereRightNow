@@ -20,10 +20,11 @@
         android:background="@color/colorPrimaryDark"
         android:textColor="#ffffff" />
 
+
     <ListView
-        android:layout_width="wrap_content"
+        android:id="@+id/list_view"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listView"
         android:layout_below="@+id/viewOnMap"
         android:layout_alignParentStart="true" />
 </RelativeLayout>

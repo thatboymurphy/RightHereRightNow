@@ -34,17 +34,21 @@ public class Places {
     private LatLng position;
     private Bitmap placeImage;
 
+    private int poiIcon;
+
     boolean isItFavd = false;
+
+
 
 
     public Places()
     {
 
-        this("null",null,"null","null",null, null);
+        this("null",null,"null","null",null, null,0);
 
     }
 
-    public Places(String placeName, String[] placeTypes, String placeAddress, String placeContactNumber, LatLng position, Bitmap placeImage)
+    public Places(String placeName, String[] placeTypes, String placeAddress, String placeContactNumber, LatLng position, Bitmap placeImage, int poiIcon)
     {
         this.placeName = placeName;
         this.placeTypes = placeTypes;
@@ -52,10 +56,14 @@ public class Places {
         this.placeContactNumber = placeContactNumber;
         this.position = position;
         this.placeImage  = placeImage;
+        this.poiIcon = poiIcon;
 
         placeType1 = placeTypes[0];
         placeType2 = placeTypes[1];
         placeType3 = placeTypes[2];
+
+
+
 
     }
 
@@ -131,10 +139,19 @@ public class Places {
 
     }
 
+    public int getPoiIcon()
+    {
+
+        return poiIcon;
+
+    }
+
     public boolean getisFavd(){
 
         return isItFavd;
     }
+
+
 
 
 

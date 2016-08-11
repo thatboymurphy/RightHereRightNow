@@ -31,6 +31,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -101,6 +103,13 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
                             place.setPlaceMasterType("Drink");
                             selectedPlaces.add(place);
 
+                            //We only want it added once, so if this statement was true, we got it
+                            break;
+
+                        }
+
+                        else{
+                            break;
                         }
 
                     }
@@ -130,6 +139,7 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
                         {
                             place.setPlaceMasterType("Food");
                             selectedPlaces.add(place);
+                            break;
                         }
 
                     }
@@ -159,6 +169,7 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
                         {
                             place.setPlaceMasterType("Coffee");
                             selectedPlaces.add(place);
+                            break;
                         }
 
                     }
@@ -267,6 +278,16 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
 
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+
+        getMenuInflater().inflate(R.menu.menu_gen, menu);
+        return true;
+
+    }
+
 
 
 
