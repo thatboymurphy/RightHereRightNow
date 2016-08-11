@@ -28,7 +28,6 @@ public class Places {
     private String placeType2;
     private String placeType3;
 
-
     private String placeAddress;
     private String placeContactNumber;
     private LatLng position;

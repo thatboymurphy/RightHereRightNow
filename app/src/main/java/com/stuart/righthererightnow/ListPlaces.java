@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ public class ListPlaces extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_places);
 
+
         //Setting up the back button
         android.app.ActionBar actionBar = getActionBar();
         if (actionBar != null) {
@@ -51,9 +53,15 @@ public class ListPlaces extends AppCompatActivity {
 
 
         for (int i = 0; i < MainActivity.selectedPlaces.size(); i++) {
+
+            // Do the calucaltion, from user to POI
+            double roundUp = CalculateLatLngDistance.distance(SplashScreen.newUserLocation.latitude,SplashScreen.newUserLocation.longitude,MainActivity.selectedPlaces.get(i).getPlacePosition().latitude ,MainActivity.selectedPlaces.get(i).getPlacePosition().longitude ,"K");
+            // Format the reuslt
+            DecimalFormat df = new DecimalFormat("#.00");
+
             HashMap<String, String> hm = new HashMap<String, String>();
             hm.put("listview_title",MainActivity.selectedPlaces.get(i).getPlaceName() );
-            hm.put("listview_discription", MainActivity.selectedPlaces.get(i).getPlaceAddress());
+            hm.put("listview_discription", (df.format(roundUp)+" KM away"));
             hm.put("listview_image", Integer.toString(MainActivity.selectedPlaces.get(i).getPoiIcon()));
             aList.add(hm);
         }
