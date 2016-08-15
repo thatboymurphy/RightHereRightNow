@@ -51,6 +51,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -184,6 +186,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //clear the map for new markers
         mMap.clear();
+
+        Collections.sort(MainActivity.selectedPlaces, new Comparator<Places>() {
+            @Override
+            public int compare(Places place1, Places place2) {
+                return Double.compare(place1.getDistanceFromUser(),place2.getDistanceFromUser());
+            }
+        });
 
         if(MainActivity.selectedPlaces.size() != -1 && MainActivity.selectedPlaces.size() != 0)
         {

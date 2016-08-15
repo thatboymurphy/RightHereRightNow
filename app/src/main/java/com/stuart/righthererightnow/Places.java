@@ -29,9 +29,10 @@ public class Places {
     private String placeType3;
 
     private String placeAddress;
-    private String placeContactNumber;
     private LatLng position;
     private Bitmap placeImage;
+
+    private double distanceFromUser;
 
     private int poiIcon;
 
@@ -43,19 +44,19 @@ public class Places {
     public Places()
     {
 
-        this("null",null,"null","null",null, null,0);
+        this("null",null,"null",null, null,0, 0.0);
 
     }
 
-    public Places(String placeName, String[] placeTypes, String placeAddress, String placeContactNumber, LatLng position, Bitmap placeImage, int poiIcon)
+    public Places(String placeName, String[] placeTypes, String placeAddress, LatLng position, Bitmap placeImage, int poiIcon, double distanceFromUser)
     {
         this.placeName = placeName;
         this.placeTypes = placeTypes;
         this.placeAddress = placeAddress;
-        this.placeContactNumber = placeContactNumber;
         this.position = position;
         this.placeImage  = placeImage;
         this.poiIcon = poiIcon;
+        this.distanceFromUser = distanceFromUser;
 
         placeType1 = placeTypes[0];
         placeType2 = placeTypes[1];
@@ -117,12 +118,6 @@ public class Places {
 
     }
 
-    public String getPlaceContactNumber()
-    {
-
-        return placeContactNumber;
-
-    }
 
     public LatLng getPlacePosition()
     {
@@ -150,13 +145,14 @@ public class Places {
         return isItFavd;
     }
 
+    public double getDistanceFromUser(){
 
-
+        return distanceFromUser;
+    }
 
 
 
     // SETTERS
-
 
 
     public void setPlaceMasterType(String placeMasterType)
@@ -164,33 +160,6 @@ public class Places {
         this.placeMasterType = placeMasterType;
     }
 
-    public void setPlaceTypes(String[] placeTypes)
-    {
-
-        this.placeTypes = placeTypes;
-
-    }
-
-    public void setPlaceAddress(String placeAddress)
-    {
-
-        this.placeAddress = placeAddress;
-
-    }
-
-    public void setPlaceContactNumber(String placeContactNumber)
-    {
-
-        this.placeContactNumber = placeContactNumber;
-
-    }
-
-    public void setPosition(LatLng position)
-    {
-
-        this.position = position;
-
-    }
 
     public void setPlaceFav(boolean favourites){
 

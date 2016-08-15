@@ -50,6 +50,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.io.IOException;
@@ -144,6 +146,10 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
 
                     }
                 }
+
+
+
+
                 // Call on the new activity
                 Intent intent = new Intent(v.getContext(), MapsActivity.class);
                 startActivity(intent);

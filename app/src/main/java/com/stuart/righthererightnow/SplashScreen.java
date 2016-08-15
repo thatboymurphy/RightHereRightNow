@@ -52,6 +52,9 @@ public class SplashScreen extends Activity implements LocationListener {
     //Double lat =  52.674166;
     //Double lng =  -8.573931;
 
+    DownloadTask task,task2,task3,task4;
+    int counter = 0;
+
     // An array for types of Places
     static ArrayList<Places> masterList = new ArrayList<Places>();
 
@@ -78,7 +81,7 @@ public class SplashScreen extends Activity implements LocationListener {
     String browserKey = "AIzaSyCmcj932D55W-U7bk2rPDmy0khT_u9JfJA";
 
     //Setting up the alert box boolean to only show on start up
-   static boolean infoShown = false;
+    static boolean infoShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,23 +104,37 @@ public class SplashScreen extends Activity implements LocationListener {
         // Fill the master array of places on start up
         if(masterList.size()==0 || masterList.size()== -1)
         {
-
+            task = new DownloadTask();
+            task2 = new DownloadTask();
+            task3 = new DownloadTask();
+            task4 = new DownloadTask();
             findJSON();
         }
+
+        Log.i("tester","good news");
 
 
 
     }
 
     public void findJSON() {
+        String call1 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
+                lat.toString() + "," + lng.toString() + "&radius=3000&type=" + drink
+                +"&key="+browserKey;
+        String call2 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
+                lat.toString() + "," + lng.toString() + "&radius=3000&type=" + food +
+                "&key="+browserKey;
+        String call3 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
+                lat.toString() + "," + lng.toString() + "&radius=3000&type=" + coffee +
+                "&key="+browserKey;
+        String call4 ="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
+                lat.toString() + "," + lng.toString() + "&radius=3000&type=" + fun +
+                "&key="+browserKey;
 
-        try
-        {
 
-            DownloadTask task = new DownloadTask();
-            DownloadTask task2 = new DownloadTask();
-            DownloadTask task3 = new DownloadTask();
-            DownloadTask task4 = new DownloadTask();
+        if(counter<4) {
+            try {
+
             /*
             Google Places API offers up to 60 results for each query. They are split up into 20 per
             page and each new page is accessed using the Page Token. If there are more than 20,
@@ -128,43 +145,46 @@ public class SplashScreen extends Activity implements LocationListener {
 
              */
 
-            //  if(pageToken == "")
-            //  {
-            // First time around there is no page token, run this
-            task.execute("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
-                    lat.toString() + "," + lng.toString() + "&radius=3500&type=" + drink
-                    +"&key="+browserKey);
+                //  if(pageToken == "")
+                //  {
+                // First time around there is no page token, run this
 
-            task2.execute("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
-                    lat.toString() + "," + lng.toString() + "&radius=3500&type=" + food +
-                    "&key="+browserKey);
+                ;
 
-            task3.execute("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
-                    lat.toString() + "," + lng.toString() + "&radius=3500&type=" + coffee +
-                    "&key="+browserKey);
+                if(counter==0){
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, call1);
 
-            task4.execute("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
-                    lat.toString() + "," + lng.toString() + "&radius=3500&type=" + fun +
-                    "&key="+browserKey);
+                }
+                else if(counter==1){
+                    task2.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, call2);
 
+                }
+                else if(counter==2){
+                    task3.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, call3);
 
-            //  }
+                }
 
-            //else
-            //  {
-            // If there is an additional results page, the page token wil lbe passed up and run this URL
-            //  task.execute("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat.toString() + "," + lat.toString() + "&radius=2000&type=" + typeURL +"&key=AIzaSyCmcj932D55W-U7bk2rPDmy0khT_u9JfJA&pagetoken=" + pageToken);
-            // }
+                else if(counter==3){
+                    task4.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, call4);
+
+                }
 
 
-        }
+                //  }
 
-        catch (Exception e)
-        {
+                //else
+                //  {
+                // If there is an additional results page, the page token wil lbe passed up and run this URL
+                //  task.execute("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat.toString() + "," + lat.toString() + "&radius=2000&type=" + typeURL +"&key=AIzaSyCmcj932D55W-U7bk2rPDmy0khT_u9JfJA&pagetoken=" + pageToken);
+                // }
 
-            e.printStackTrace();
-            Log.i("URL Search", "Unsuccessful");
 
+            } catch (Exception e) {
+
+                e.printStackTrace();
+                Log.i("URL Search", "Unsuccessful");
+
+            }
         }
 
     }
@@ -179,20 +199,22 @@ public class SplashScreen extends Activity implements LocationListener {
             String response = "";
             URL url;
             HttpURLConnection urlConnection = null;
-            try
-            {
+
+            try {
                 url = new URL(urls[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
                 InputStream in = urlConnection.getInputStream();
                 InputStreamReader reader = new InputStreamReader(in);
                 int data = reader.read();
-                while (data != -1)
-                {
+                while (data != -1) {
                     char current = (char) data;
                     response += current;
                     data = reader.read();
 
                 }
+                counter++;
+                findJSON();
+
                 // Pass down the source code of the URL in form of a string
                 return response;
 
@@ -200,6 +222,7 @@ public class SplashScreen extends Activity implements LocationListener {
                 Log.i("Google Places Search", "Error reading source code of URL");
             }
             return null;
+
         }
 
         @Override
@@ -262,99 +285,9 @@ public class SplashScreen extends Activity implements LocationListener {
                         String result = types.toString();
                         result = result.substring(1, result.length() - 1);
                         allTypes = result.split(",");
+                        allTypes = sortTypes(allTypes);
 
-                        // Improving the format
-                        for(int j = 0; j < allTypes.length;j++)
-                        {
-                            switch (allTypes[j]) {
-                                case "\"bar\"":
 
-                                    allTypes[j] = "Bar";
-                                    break;
-                                case "\"night_club\"":
-                                    allTypes[j] = "Night Club";
-                                    break;
-                                case "\"amusement_park\"":
-
-                                    allTypes[j] = "Amusements";
-                                    break;
-                                case "\"art_gallery\"":
-
-                                    allTypes[j] = "Art Gallery";
-
-                                    break;
-                                case "\"cafe\"":
-
-                                    allTypes[j] = "Cafe";
-
-                                    break;
-                                case "\"casino\"":
-
-                                    allTypes[j] = "Casino";
-
-                                    break;
-
-                                case "\"zoo\"":
-
-                                    allTypes[j] = "Zoo";
-
-                                    break;
-
-                                case "\"stadium\"":
-                                    allTypes[j] = "Stadium";
-
-                                    break;
-                                case "\"shopping_mall\"":
-
-                                    allTypes[j] = "Shopping Centre";
-
-                                    break;
-
-                                case "\"movie_theater\"":
-
-                                    allTypes[j] = "Cinema";
-
-                                    break;
-                                case "\"restaurant\"":
-
-                                    allTypes[j] = "Restaurant";
-
-                                    break;
-                                case "\"museum\"":
-
-                                    allTypes[j] = "Museum";
-
-                                    break;
-
-                                case "\"food\"":
-
-                                    allTypes[j] = "Food";
-
-                                    break;
-
-                                case "\"meal_takeaway\"":
-
-                                    allTypes[j] = "Take Away";
-
-                                    break;
-
-                                case "\"bakery\"":
-
-                                    allTypes[j] = "Bakery";
-
-                                    break;
-
-                                case "\"lodging\"":
-
-                                    allTypes[j] = "Accommodation";
-
-                                    break;
-                                default:
-                                   allTypes[j] = "";
-                                    break;
-                            }
-
-                        }
 
                     } catch (JSONException e) {
                         // TODO Auto-generated catch block
@@ -404,7 +337,7 @@ public class SplashScreen extends Activity implements LocationListener {
                         e.printStackTrace();
                     }
 
-                    int poiIcon = 0;
+                    int poiIcon;
 
                     if (allTypes[0].equals("Bar")|| allTypes[0].equals("Night Club"))
                     {
@@ -423,9 +356,11 @@ public class SplashScreen extends Activity implements LocationListener {
                         poiIcon = R.drawable.otherblack;
                     }
 
+                    double roundUp = CalculateLatLngDistance.distance(newUserLocation.latitude,newUserLocation.longitude,Double.parseDouble(locationLat) ,Double.parseDouble(locationLng) ,"K");
+
                     // Notihng is on list...add away
                     if(masterList.size() <= 0){
-                        Places newPOI = new Places(name, allTypes, address, "null", new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), myImg, poiIcon);
+                        Places newPOI = new Places(name, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), myImg, poiIcon, roundUp);
                         masterList.add(newPOI);
 
                     }
@@ -443,17 +378,15 @@ public class SplashScreen extends Activity implements LocationListener {
                         }
                         // Only add it if it is not already on the list
                         if(!isOnList){
-                            Places newPOI = new Places(name, allTypes, address, "null", new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), myImg,poiIcon);
+                            Places newPOI = new Places(name, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), myImg, poiIcon, roundUp);
                             masterList.add(newPOI);
 
                         }
                     }
 
-
-
-                    Log.i("Counter", jsonCounter + "\n");
+                    //   Log.i("Counter", jsonCounter + "\n");
                     // Log.i("LatLng", locationLat + " " + locationLng + "\n");
-                    Log.i("Location Name",name + "\n");
+                    //  Log.i("Location Name",name + "\n");
                     // Log.i("Types", allTypes[0] + "," + allTypes[1]+ "," + allTypes[2]+ "\n");
                     // Log.i("Location Address", address + "\n");
                     // Log.i("Picture", placePhoto + "\n");
@@ -467,15 +400,33 @@ public class SplashScreen extends Activity implements LocationListener {
                 if(pageToken != "" )
                 {
                     // findJSON(); // commented out because I decided I only want one page that has 20 results
-                    Log.i("Could load more pages", pageToken + "\n");
+                    //  Log.i("Could load more pages", pageToken + "\n");
                     jsonCounter = 1;
+
+                    if(counter==4) {
+                        Intent i = new Intent(SplashScreen.this, MainActivity.class);
+                        startActivity(i);
+                        Toast.makeText(getApplicationContext(), "POIs in your area uploaded", Toast.LENGTH_LONG).show();
+
+                        // close this activity
+                        finish();
+                    }
                 }
 
                 // If it is empty that means that there are no more results pages and the process is complete
                 else
                 {
-                    Log.i("JSON Search Status", " Complete");
+                    Log.i("JSON Search Status", " Request Complete");
                     jsonCounter = 1;
+
+                    if(counter==4) {
+                        Intent i = new Intent(SplashScreen.this, MainActivity.class);
+                        startActivity(i);
+                        Toast.makeText(getApplicationContext(), "POIs in your area uploaded", Toast.LENGTH_LONG).show();
+
+                        // close this activity
+                        finish();
+                    }
 
                 }
 
@@ -486,14 +437,106 @@ public class SplashScreen extends Activity implements LocationListener {
 
             }
 
-            Intent i = new Intent(SplashScreen.this, MainActivity.class);
-            startActivity(i);
-            Toast.makeText(getApplicationContext(), "POIs in your area uploaded", Toast.LENGTH_SHORT).show();
 
-            // close this activity
-            finish();
 
         }
+    }
+
+    public String[] sortTypes(String[] allTypes){
+
+        // Improving the format
+        for(int j = 0; j < allTypes.length;j++)
+        {
+            switch (allTypes[j]) {
+                case "\"bar\"":
+
+                    allTypes[j] = "Bar";
+                    break;
+                case "\"night_club\"":
+                    allTypes[j] = "Night Club";
+                    break;
+                case "\"amusement_park\"":
+
+                    allTypes[j] = "Amusements";
+                    break;
+                case "\"art_gallery\"":
+
+                    allTypes[j] = "Art Gallery";
+
+                    break;
+                case "\"cafe\"":
+
+                    allTypes[j] = "Cafe";
+
+                    break;
+                case "\"casino\"":
+
+                    allTypes[j] = "Casino";
+
+                    break;
+
+                case "\"zoo\"":
+
+                    allTypes[j] = "Zoo";
+
+                    break;
+
+                case "\"stadium\"":
+                    allTypes[j] = "Stadium";
+
+                    break;
+                case "\"shopping_mall\"":
+
+                    allTypes[j] = "Shopping Centre";
+
+                    break;
+
+                case "\"movie_theater\"":
+
+                    allTypes[j] = "Cinema";
+
+                    break;
+                case "\"restaurant\"":
+
+                    allTypes[j] = "Restaurant";
+
+                    break;
+                case "\"museum\"":
+
+                    allTypes[j] = "Museum";
+
+                    break;
+
+                case "\"food\"":
+
+                    allTypes[j] = "Food";
+
+                    break;
+
+                case "\"meal_takeaway\"":
+
+                    allTypes[j] = "Take Away";
+
+                    break;
+
+                case "\"bakery\"":
+
+                    allTypes[j] = "Bakery";
+
+                    break;
+
+                case "\"lodging\"":
+
+                    allTypes[j] = "Accommodation";
+
+                    break;
+                default:
+                    allTypes[j] = "";
+                    break;
+            }
+
+        }
+        return allTypes;
     }
 
     // This happens on the background thread and is called on when performing JSO read through
@@ -564,7 +607,7 @@ public class SplashScreen extends Activity implements LocationListener {
             // This will be null on an emulator, so it will make the rest of the process crash when searching URL
             // Gets a quick fix on where the user is likely to be, may take a few seconds to get
             // the reading, be awre of that when waiting at start
-             location = locationManager.getLastKnownLocation(provider);
+            location = locationManager.getLastKnownLocation(provider);
 
             // Be sure to get the most recent whereabouts of user
             // the provider we are using. minimum time between location updates, number of meters, context(the app)
@@ -603,7 +646,7 @@ public class SplashScreen extends Activity implements LocationListener {
         Log.i("Longitude", lng.toString());
 
         Log.i("Tracker", "Just about to update lat lng");
-       newUserLocation = new LatLng(lat, lng);
+        newUserLocation = new LatLng(lat, lng);
 
         // This may need to go back in // m.remove();
 

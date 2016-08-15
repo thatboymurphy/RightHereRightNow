@@ -1,9 +1,15 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff"
     tools:context="com.stuart.righthererightnow.FragmentA">
+
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+>
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -17,7 +23,7 @@
         android:scaleType="fitXY"
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="50dp"
         android:paddingBottom="0dp"
 
     />
@@ -93,3 +99,4 @@
         android:layout_alignParentStart="true" />
 
 </RelativeLayout>
+    </ScrollView>

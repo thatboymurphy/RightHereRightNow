@@ -55,19 +55,20 @@ public class ListPlaces extends AppCompatActivity {
         for (int i = 0; i < MainActivity.selectedPlaces.size(); i++) {
 
             // Do the calucaltion, from user to POI
-            double roundUp = CalculateLatLngDistance.distance(SplashScreen.newUserLocation.latitude,SplashScreen.newUserLocation.longitude,MainActivity.selectedPlaces.get(i).getPlacePosition().latitude ,MainActivity.selectedPlaces.get(i).getPlacePosition().longitude ,"K");
+
             // Format the reuslt
             DecimalFormat df = new DecimalFormat("#.00");
 
             HashMap<String, String> hm = new HashMap<String, String>();
-            hm.put("listview_title",MainActivity.selectedPlaces.get(i).getPlaceName() );
-            hm.put("listview_discription", (df.format(roundUp)+" KM away"));
+            hm.put("listview_title",MainActivity.selectedPlaces.get(i).getPlaceName());
+            hm.put("listview_address",MainActivity.selectedPlaces.get(i).getPlaceAddress());
+            hm.put("listview_discription", (df.format(MainActivity.selectedPlaces.get(i).getDistanceFromUser())+" KM away"));
             hm.put("listview_image", Integer.toString(MainActivity.selectedPlaces.get(i).getPoiIcon()));
             aList.add(hm);
         }
 
-        String[] from = {"listview_image", "listview_title", "listview_discription"};
-        int[] to = {R.id.listview_image, R.id.listview_item_title, R.id.listview_item_short_description};
+        String[] from = {"listview_image", "listview_title","listview_address", "listview_discription"};
+        int[] to = {R.id.listview_image, R.id.listview_item_title, R.id.listview_item_address, R.id.listview_item_short_description};
 
         SimpleAdapter simpleAdapter = new SimpleAdapter(getBaseContext(), aList, R.layout.listview_activity, from, to);
         ListView androidListView = (ListView) findViewById(R.id.list_view);
