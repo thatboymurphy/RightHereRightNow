@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    tools:context="com.stuart.righthererightnow.ImageEnlargedActivity">
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#000000">
+
+        <ImageView android:id="@+id/full_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:background="#000000" />
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/buttonGrid"
+            android:columnCount="2"
+            android:rowCount="1"
+
+            android:useDefaultMargins="true"
+            android:rowOrderPreserved="false"
+            android:transitionGroup="false"
+            android:nestedScrollingEnabled="false"
+            android:background="#ffffff">
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="61dp"
+            android:id="@+id/profilePic"
+            android:src="@drawable/usermarker"
+            android:paddingTop="2dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Texting"
+            android:id="@+id/dateAndAuthor"
+            android:background="#ffffff"
+            android:paddingTop="2dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="10dp"
+
+            android:textStyle="bold"
+            android:textColor="#FF9800" />
+
+        </GridLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Content"
+            android:id="@+id/content"
+            android:background="#ffffff"
+            android:paddingTop="10dp"
+            android:paddingBottom="30dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginBottom="40dp"/>
+
+    </LinearLayout>
+</ScrollView>
