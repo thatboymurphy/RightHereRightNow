@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
 
     static ArrayList<Places> selectedPlaces = new ArrayList<Places>();
     static ArrayList<Places> myFavourites = new ArrayList<Places>();
+    static boolean searchMode; //This will help determine where to animate the map camera too after selections
 
 
     @Override
@@ -96,13 +97,12 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
                     String[] types = place.getPlaceTypes();
 
                     // Read through these types
-                    for(int i = 0; i < place.getPlaceTypes().length; i++)
+                    for(int i = 0; i < types.length; i++)
                     {
                         //if the the type Bar or Night Club is used assing it as Drink
-                        if (types[i].equals("Bar")
-                            || types[i].equals("Night Club"))
+                  if(types[i].equalsIgnoreCase("Bar")||types[i].equalsIgnoreCase("Night Club"))
                         {
-                            place.setPlaceMasterType("Drink");
+
                             selectedPlaces.add(place);
 
                             //We only want it added once, so if this statement was true, we got it
@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
 
                     }
                 }
+                searchMode = false;
                 // Call on the new activity
                 Intent intent = new Intent(v.getContext(), MapsActivity.class);
                 startActivity(intent);
@@ -137,9 +138,9 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
                     for(int i = 0; i < place.getPlaceTypes().length; i++)
                     {
 
-                        if (types[i].equals("Restaurant"))
+                        if (types[i].equalsIgnoreCase("Restaurant"))
                         {
-                            place.setPlaceMasterType("Food");
+
                             selectedPlaces.add(place);
                             break;
                         }
@@ -149,7 +150,7 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
 
 
 
-
+                searchMode = false;
                 // Call on the new activity
                 Intent intent = new Intent(v.getContext(), MapsActivity.class);
                 startActivity(intent);
@@ -171,15 +172,16 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
                     for(int i = 0; i < place.getPlaceTypes().length; i++)
                     {
 
-                        if (types[i].equals("Cafe"))
+                        if (types[i].equalsIgnoreCase("Cafe"))
                         {
-                            place.setPlaceMasterType("Coffee");
+
                             selectedPlaces.add(place);
                             break;
                         }
 
                     }
                 }
+                searchMode = false;
                 // Call on the new activity
                 Intent intent = new Intent(v.getContext(), MapsActivity.class);
                 startActivity(intent);
@@ -201,23 +203,28 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
                     for(int i = 0; i < place.getPlaceTypes().length; i++)
                     {
 
-                        if (types[i].equals("Amusements")
-                            || types[i].equals("Art Gallery")
-                                || types[i].equals("Casino")
-                                || types[i].equals("Zoo")
-                                || types[i].equals("Stadium")
-                                || types[i].equals("Shopping Centre")
-                                || types[i].equals("Cinema")
-                                || types[i].equals("Museum")
+                        if (types[i].equalsIgnoreCase("Amusement Park")
+                            || types[i].equalsIgnoreCase("Art Gallery")
+                                || types[i].equalsIgnoreCase("Casino")
+                                || types[i].equalsIgnoreCase("Zoo")
+                                || types[i].equalsIgnoreCase("Stadium")
+                                || types[i].equalsIgnoreCase("Shopping Mall")
+                                || types[i].equalsIgnoreCase("Movie Theatre")
+                                || types[i].equalsIgnoreCase("Museum")
                                 )
                         {
-                            place.setPlaceMasterType("Fun");
+
                             selectedPlaces.add(place);
                             break;
+                        }
+                        else{
+                            Log.i("tester",Integer.toString(selectedPlaces.size()));
+
                         }
 
                     }
                 }
+                searchMode = false;
                 // Call on the new activity
                 Intent intent = new Intent(v.getContext(), MapsActivity.class);
                 startActivity(intent);
@@ -231,16 +238,30 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
 
             @Override
             public void onClick(View v) {
-                ;
+                selectedPlaces.clear();
+
+                for(Places place: SplashScreen.masterList){
+
+                    if(place.getCounterPast6Hours()>0||place.getCounter6to12()>0||place.getCounter12to18()>0||place.getCounter18to24()>0){
+
+                        selectedPlaces.add(place);
+                    }
+
+                }
+
+
+                searchMode = false;
+                // Call on the new activity
+                Intent intent = new Intent(v.getContext(), MapsActivity.class);
+                startActivity(intent);
             }
-
-
         }  );
 
         favButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                searchMode = false;
                 Intent intent = new Intent(v.getContext(), MapsActivity.class);
                 startActivity(intent);
 
@@ -266,6 +287,13 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
 
             @Override
             public void onClick(View v) {
+                searchMode = true;
+
+                selectedPlaces.clear();
+                // Call on the new activity
+                Intent intent = new Intent(v.getContext(), SearchFeature.class);
+                startActivity(intent);
+
 
             }
 

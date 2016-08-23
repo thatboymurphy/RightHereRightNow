@@ -4,6 +4,8 @@
 * Project: Masters Thesis
 * Date: 08/08/2016
 *
+* Most Recnt 17th aug
+*
 * Description:
 * The following code is work in progress for my mobile application presentation. It is due
 * completion before the 29th of August 2016. This is for supervisors viewing only to see how the
@@ -19,11 +21,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.support.annotation.NonNull;
@@ -42,7 +46,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class SplashScreen extends Activity implements LocationListener {
     // Hard Coded Lat Lngs
@@ -52,7 +59,6 @@ public class SplashScreen extends Activity implements LocationListener {
     //Double lat =  52.674166;
     //Double lng =  -8.573931;
 
-    DownloadTask task,task2,task3,task4;
     int counter = 0;
 
     // An array for types of Places
@@ -68,10 +74,6 @@ public class SplashScreen extends Activity implements LocationListener {
     static Double lat;
     static Double lng;
 
-    // For Google Places API section
-    int jsonCounter = 1;
-    String pageToken = "";
-
     // String varibles to place into URL
     String drink = "bar|night_club";
     String food = "restaurant";
@@ -82,6 +84,20 @@ public class SplashScreen extends Activity implements LocationListener {
 
     //Setting up the alert box boolean to only show on start up
     static boolean infoShown = false;
+
+    String call1, call2, call3, call4;
+
+    DownloadTask task1, task2, task3,task4;
+
+
+    String accessToken = "543153997.3bb3331.66f453d8e7d24f638824352145af3263";
+    String currentDateFormatted = "";
+    DateFormat formatter = null;
+
+    DateFormat uiFormatter = null;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,94 +116,81 @@ public class SplashScreen extends Activity implements LocationListener {
 
         getLocation();
 
+        //Date formatting
+        formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        uiFormatter = new SimpleDateFormat("dd-MMMM-yyyy HH:mm:ss");
 
-        // Fill the master array of places on start up
-        if(masterList.size()==0 || masterList.size()== -1)
-        {
-            task = new DownloadTask();
-            task2 = new DownloadTask();
-            task3 = new DownloadTask();
-            task4 = new DownloadTask();
-            findJSON();
-        }
-
-        Log.i("tester","good news");
+        //get current date time with Date()
+        Date now = new Date();
+        currentDateFormatted = formatter.format(now);
 
 
-
-    }
-
-    public void findJSON() {
-        String call1 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
+         call1 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
                 lat.toString() + "," + lng.toString() + "&radius=3000&type=" + drink
                 +"&key="+browserKey;
-        String call2 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
+         call2 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
                 lat.toString() + "," + lng.toString() + "&radius=3000&type=" + food +
                 "&key="+browserKey;
-        String call3 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
+         call3 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
                 lat.toString() + "," + lng.toString() + "&radius=3000&type=" + coffee +
                 "&key="+browserKey;
-        String call4 ="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
+         call4 ="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
                 lat.toString() + "," + lng.toString() + "&radius=3000&type=" + fun +
                 "&key="+browserKey;
 
 
-        if(counter<4) {
-            try {
+        // Fill the master array of places on start up
+        if(masterList.size()==0 || masterList.size()== -1)
+        {
 
-            /*
-            Google Places API offers up to 60 results for each query. They are split up into 20 per
-            page and each new page is accessed using the Page Token. If there are more than 20,
-            the page token is provided and can be used to access a new URL of 20 places.
+            if(counter<4) {
+                try {
+                    task1 = new DownloadTask();
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+                        task1.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, call1);
+                    }
+                    else {
+                        task1.execute(call1);
+                    }
 
-            In this instances, I only want 20 places so I have commented out the process of getting
-            more
+                    task2 = new DownloadTask();
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+                        task2.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, call2);
+                    }
+                    else {
+                        task2.execute(call2);
 
-             */
 
-                //  if(pageToken == "")
-                //  {
-                // First time around there is no page token, run this
+                    }
 
-                ;
+                    task3 = new DownloadTask();
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+                        task3.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, call3);
+                    }
+                    else {
+                        task3.execute(call3);
+                    }
 
-                if(counter==0){
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, call1);
+                    task4 = new DownloadTask();
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+                        task4.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, call4);
+                    }
+                    else {
+                        task4.execute(call4);
+                    }
+
+
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+                    Log.i("URL Search", "Unsuccessful");
 
                 }
-                else if(counter==1){
-                    task2.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, call2);
-
-                }
-                else if(counter==2){
-                    task3.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, call3);
-
-                }
-
-                else if(counter==3){
-                    task4.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, call4);
-
-                }
-
-
-                //  }
-
-                //else
-                //  {
-                // If there is an additional results page, the page token wil lbe passed up and run this URL
-                //  task.execute("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat.toString() + "," + lat.toString() + "&radius=2000&type=" + typeURL +"&key=AIzaSyCmcj932D55W-U7bk2rPDmy0khT_u9JfJA&pagetoken=" + pageToken);
-                // }
-
-
-            } catch (Exception e) {
-
-                e.printStackTrace();
-                Log.i("URL Search", "Unsuccessful");
-
             }
         }
 
     }
+
 
     public class DownloadTask extends AsyncTask<String, Void, String> {
 
@@ -196,32 +199,36 @@ public class SplashScreen extends Activity implements LocationListener {
         {
             // This method reads through the source code of the given URL
 
+
             String response = "";
             URL url;
             HttpURLConnection urlConnection = null;
+            InputStream in = null;
 
             try {
-                url = new URL(urls[0]);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                InputStream in = urlConnection.getInputStream();
-                InputStreamReader reader = new InputStreamReader(in);
-                int data = reader.read();
-                while (data != -1) {
-                    char current = (char) data;
-                    response += current;
-                    data = reader.read();
 
+                        url = new URL(urls[0]);
+                        urlConnection = (HttpURLConnection) url.openConnection();
+                        in = urlConnection.getInputStream();
+                        InputStreamReader reader = new InputStreamReader(in);
+                        int data = reader.read();
+                        while (data != -1) {
+                            char current = (char) data;
+                            response += current;
+                            data = reader.read();
+                        }
+                in.close();
+                urlConnection.disconnect();
+
+
+                    return response;
+
+                } catch (Exception e) {
+                    Log.i("Google Places Search", "Error reading source code of URL");
                 }
-                counter++;
-                findJSON();
 
-                // Pass down the source code of the URL in form of a string
-                return response;
 
-            } catch (Exception e) {
-                Log.i("Google Places Search", "Error reading source code of URL");
-            }
-            return null;
+                return null;
 
         }
 
@@ -229,315 +236,408 @@ public class SplashScreen extends Activity implements LocationListener {
         protected void onPostExecute(String response) {
             // This where where we use JSON technique to pull objects and what we need from the string passed down
             super.onPostExecute(response);
-            String name = "";
+            Log.i("Status", "Beginning Parse");
+                try {
 
-            try {
+                    // The entire response of the URL page is made into an JSON object
+                    JSONObject obj1 = new JSONObject(response);
 
-                // The entire response of the URL page is made into an JSON object
-                JSONObject obj1 = new JSONObject(response);
+                    // Within in the entire response are arrays that hold nest information
+                    JSONArray jsonarr = obj1.getJSONArray("results");
 
-                // Accessible values can now be pulled from this object.
-                try
-                {
-                    pageToken = obj1.getString("next_page_token");
-                }
+                    // Once an array of JSONObjects are created, we can iterate though the array
+                    // searching for objects we require within
+                    for (int i = 0; i < jsonarr.length(); i++) {
+                        String resource = jsonarr.getJSONObject(i).toString();
+                        JSONObject obj2 = new JSONObject(resource);
 
-                // If there are less than 20 pages, there is no value for pageToken so its value is
-                // assigned "" to avoid errors.
-                catch(Exception e){
-                    pageToken = "";
-                }
+                        String name = "";
+                        try {
+                            // Getting the name of a place
+                            name = obj2.getString("name");
+                        } catch (Exception e) {
+                            name = "No Found Name";
+                        }
 
-                // Within in the entire response are arrays that hold nest information
-                JSONArray jsonarr = obj1.getJSONArray("results");
+                        // Getting the address of a place, try/catch as some palces do not have address
+                        String address = "";
+                        try {
+                            address = obj2.getString("vicinity");
+                        } catch (Exception e) {
+                            address = "No Found Address";
+                        }
 
-                // Once an array of JSONObjects are created, we can iterate though the array
-                // searching for objects we require within
-                for (int i = 0; i < jsonarr.length(); i++)
-                {
-                    String resource = jsonarr.getJSONObject(i).toString();
-                    JSONObject obj2 = new JSONObject(resource);
+                        String locationLng = "";
+                        String locationLat = "";
+                        // Getting the location of a place
+                        try {
+                            String geoNest = obj2.getJSONObject("geometry").toString();
+                            JSONObject obj3 = new JSONObject(geoNest);
+                            locationLng = obj3.getJSONObject("location").getString("lng");
+                            locationLat = obj3.getJSONObject("location").getString("lat");
+                        } catch (Exception e) {
+                            locationLng = "No Found Longitude";
+                            locationLat = "No Found Latitude";
+                        }
 
-                    // Getting the name of a place
-                    name = obj2.getString("name");
+                        // Getting the types of a place
+                        String[] allTypes = null;
+                        try {
+                            JSONArray types = (JSONArray) ((JSONObject) jsonarr.get(i)).get("types");
+                            String result = types.toString();
+                            result = result.substring(1, result.length() - 1).replace("_"," ").replace("\"","");
+                            allTypes = result.split(",");
 
-                    // Getting the address of a place, try/catch as some palces do not have address
-                    String address = "";
-                    try{
-                        address = obj2.getString("vicinity");}
-                    catch(Exception e){
-                        address = "No Given Address";
+                            //allTypes = sortTypes(allTypes);
+                        } catch (JSONException e) {
+                            allTypes = null;
+                        }
+
+                        // Assign POI an icon
+                        int poiIcon, poiFavdMarker, poiMarker;
+                        if (allTypes[0].equalsIgnoreCase("Bar") || allTypes[0].equalsIgnoreCase("Night Club")) {
+                            poiIcon = R.drawable.beerblack;
+                            poiFavdMarker = R.drawable.beerfav;
+                            poiMarker = R.drawable.beernormal;
+
+                        } else if (allTypes[0].equalsIgnoreCase("Restaurant")||allTypes[0].equalsIgnoreCase("Food")||allTypes[0].equalsIgnoreCase("Meal Takeaway")||allTypes[0].equalsIgnoreCase("Meal Delivery")) {
+                            poiIcon = R.drawable.foodblack;
+                            poiFavdMarker = R.drawable.foodfav;
+                            poiMarker = R.drawable.foodnormal;
+
+                        } else if (allTypes[0].equalsIgnoreCase("Cafe")) {
+                            poiIcon = R.drawable.coffeeblack;
+                            poiFavdMarker = R.drawable.coffeefav;
+                            poiMarker = R.drawable.coffeenorm;
+
+                        } else {
+                            poiIcon = R.drawable.otherblack;
+                            poiFavdMarker = R.drawable.otherfav;
+                            poiMarker = R.drawable.othernorm;
+
+                        }
+
+                        // placesg the reference for a palces photo
+                        String photoRef = "";
+                        try {
+                            JSONArray jsonarr2 = obj2.getJSONArray("photos");
+                            for (int j = 0; j < jsonarr2.length(); j++) {
+                                String resource2 = jsonarr2.getJSONObject(j).toString();
+                                JSONObject obj4 = new JSONObject(resource2);
+                                photoRef = obj4.getString("photo_reference");
+                            }
+                        } catch (Exception e) {
+                            // Keep it empty so a later condition tells the UI there is no image available
+                            photoRef = "";
+                        }
+
+                        // Using the reference to get the actual image
+                        ImageDownloader task = new ImageDownloader();
+                        Bitmap myImg = null;
+                        try {
+                            if (photoRef != "") {
+                                // It then executes the task of image downloader
+                                myImg = task.execute("https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&maxheight=250&phot" +
+                                        "oreference=" + photoRef + "&key=AIzaSyCmcj932D55W-U7bk2rPDmy0khT_u9JfJA\n").get();
+                            } else {
+                                myImg = task.execute("http://www.askdeb.com/wp-content/uploads/2013/07/No-Photo-Available.png").get();
+                            }
+
+
+                        } catch (Exception e) {
+
+                            e.printStackTrace();
+                        }
+
+
+                        // Calculate the POIs distance from user
+                        double roundUp = CalculateLatLngDistance.distance(newUserLocation.latitude, newUserLocation.longitude, Double.parseDouble(locationLat), Double.parseDouble(locationLng), "K");
+
+                        int masterPostCounter = 0;
+                        int counterPast6Hours = 0;
+                        int counter6to12 = 0;
+                        int counter12to18 = 0;
+                        int counter18to24 = 0;
+
+                        ArrayList<POISocialMediaPosts> userPosts = new ArrayList<POISocialMediaPosts>();
+
+
+                        // If notihng is on list...add away
+                        if (masterList.size() <= 0) {
+
+                            Places newPOI = new Places(name, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), photoRef, myImg, poiIcon,poiMarker,poiFavdMarker, roundUp,
+                                    masterPostCounter, counterPast6Hours, counter6to12, counter12to18, counter18to24, userPosts);
+                            masterList.add(newPOI);
+
+
+                        }
+                        // To avoid adding duplicates i.e. some pubs are also restaurants
+                        else {
+                            boolean isOnList = false;
+                            for (Places place : masterList) {
+                                if (place.getPlaceName().equals(name)) {
+                                    isOnList = true;
+                                    break;
+                                }
+                            }
+                            // Only add it if it is not already on the list
+                            if (!isOnList) {
+                                POISocialMediaPosts post = new POISocialMediaPosts();
+                                Places newPOI = new Places(name, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), photoRef, myImg, poiIcon,poiMarker,poiFavdMarker, roundUp,
+                                        masterPostCounter, counterPast6Hours, counter6to12, counter12to18, counter18to24, userPosts);
+                                masterList.add(newPOI);
+                            }
+                        }
                     }
 
-                    // Getting the location of a place
-                    String geoNest = obj2.getJSONObject("geometry").toString();
+                    counter++;
+                    Log.i("JSON Search Status", " Request Complete");
 
-                    JSONObject obj3 = new JSONObject(geoNest);
-                    String locationLng = obj3.getJSONObject("location").getString("lng");
-                    String locationLat = obj3.getJSONObject("location").getString("lat");
+                } catch (JSONException e) {
+                    Log.i("JSON Search Status", "Something went wrong in JSON process.Check array access");
+                }
 
 
-                    // Getting the types of a place
-                    String[] allTypes = null;
+
+            if(counter==4) {
+
+                String userRecentMedia = "";
+                InstagramTask instaTask;
+                String instaResponse ="";
+                String emptyInsta = "{\"meta\": {\"code\": 200}, \"data\": []}";
+
+                for(Places place: masterList) {
+
+                      userRecentMedia = "https://api.instagram.com/v1/media/search?lat=" +
+                            place.getPlacePosition().latitude + "&lng=" + place.getPlacePosition().longitude + "&distance=20&access_token=" + accessToken;
+
+                    try
+                    {
+                        instaTask = new InstagramTask();
+                        instaResponse = instaTask.execute(userRecentMedia).get();
+
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
+                        Log.i("URL Search", "Unsuccessful");
+                    }
+
+                    String imageURL = "";
+                    String postText = "";
+                    String userName = "";
+                    String profilePicUrl = "";
+                    String date = "";
+                    Bitmap bitImg = null;
+                    Bitmap profileBitImg = null;
+
+
                     try {
 
-                        JSONArray types = (JSONArray) ((JSONObject) jsonarr.get(i)).get("types");
-                        String result = types.toString();
-                        result = result.substring(1, result.length() - 1);
-                        allTypes = result.split(",");
-                        allTypes = sortTypes(allTypes);
+                        if(!instaResponse.equals(emptyInsta)) {
+                            JSONObject obj1 = new JSONObject(instaResponse);
+
+                            JSONArray jsonArr = obj1.getJSONArray("data");
+
+
+                            for (int i = 0; i < jsonArr.length(); i++) {
+                                String resource = jsonArr.getJSONObject(i).toString();
+                                JSONObject obj2 = new JSONObject(resource);
+
+                                String geoNest = obj2.getJSONObject("images").toString(); //RESOURCE OBJECT
+                                JSONObject obj3 = new JSONObject(geoNest);
+                                imageURL = obj3.getJSONObject("standard_resolution").getString("url"); //REACHED THE FIELDS
+
+                                ImageDownloader task = new ImageDownloader();
+                                try {
+                                    // It then executes the task of image downloader
+                                    bitImg = task.execute(imageURL).get();
+
+                                } catch (Exception e) {
+
+                                    e.printStackTrace();
+                                }
+
+                                geoNest = obj2.getJSONObject("caption").toString(); //RESOURCE OBJECT
+                                obj3 = new JSONObject(geoNest);
+                                postText = obj3.getString("text");
+                                userName = obj3.getJSONObject("from").getString("username"); //REACHED THE FIELDS
+                                profilePicUrl = obj3.getJSONObject("from").getString("profile_picture");
+                                ImageDownloader task2 = new ImageDownloader();
+                                try {
+                                    // It then executes the task of image downloader
+                                    profileBitImg = task2.execute(profilePicUrl).get();
+
+                                } catch (Exception e) {
+
+                                    e.printStackTrace();
+                                }
+
+
+                                date = obj3.getString("created_time");
+                                long x = Long.parseLong(date) * 1000;
+                                Date dateTrans = new Date(x);
+
+                                String imageDateFormatted = formatter.format(dateTrans);
+
+
+                                Date d1 = null;
+                                Date d2 = null;
+
+                                String difference = "";
+
+                                try{
+
+                                    d1 = formatter.parse(imageDateFormatted);
+                                    d2 = formatter.parse(currentDateFormatted);
+
+                                    //in milliseconds
+                                    long diff = d2.getTime() - d1.getTime();
+
+                                    long diffSeconds = diff / 1000 % 60;
+                                    long diffMinutes = diff / (60 * 1000) % 60;
+                                    long diffHours = diff / (60 * 60 * 1000) % 24;
+                                    long diffDays = diff / (24 * 60 * 60 * 1000);
+
+                                    difference = (String.valueOf(diffDays)+ " days, "+String.valueOf(diffHours)+ " hours, "+String.valueOf(diffMinutes)+ " minutes, "+String.valueOf(diffSeconds)+ " seconds AGO");
+
+                                    if(diffDays<1){
+
+                                        if(diffHours<6){
+                                            place.setCounterPast6Hours(place.getCounterPast6Hours()+1);
+
+                                        }
+                                        else if(diffHours>=6&&diffHours<12){
+                                            place.setCounter6to12(place.getCounter6to12()+1);
+                                        }
+                                        else if(diffHours>=12&&diffHours<18){
+                                            place.setCounter12to18(place.getCounter12to18()+1);
+                                        }
+                                        else{
+                                            place.setCounter18to24(place.getCounter18to24()+1);
+                                        }
+
+                                        place.setMasterPostCounter(place.getMasterPostCounter()+1);
+
+
+                                    }
+                                    else{
+                                        place.setMasterPostCounter(place.getMasterPostCounter()+1);
+                                    }
+
+                                }
+                                catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                                String uiDate = uiFormatter.format(dateTrans);
+                                String source = "Instagram";
+
+                                //Log.i("Date", x + "\n");
+                                Log.i("POI", place.getPlaceName() + "\n");
+                                Log.i("Date", uiDate + "\n");
+                                Log.i("UserName", userName + "\n");
+                                Log.i("Post", postText + "\n");
+                                Log.i("URL", imageURL + "\n");
+                                Log.i("Diff", difference + "\n");
 
 
 
-                    } catch (JSONException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
 
-                    // Getting the reference for a palces photo
-                    String placePhoto = "";
-                    try
-                    {
-                        JSONArray jsonarr2 = obj2.getJSONArray("photos");
-
-                        for (int j = 0; j < jsonarr2.length(); j++)
-                        {
-                            String resource2 = jsonarr2.getJSONObject(j).toString();
-                            JSONObject obj4 = new JSONObject(resource2);
-                            placePhoto = obj4.getString("photo_reference");
-                        }
-
-                    } catch(Exception e)
-                    {
-                        // Keep it empty so a later condition tells the UI there is no image available
-                        placePhoto = "";
-                    }
-
-                    // Using the reference to get the actual image
-                    ImageDownloader task = new ImageDownloader();
-                    Bitmap myImg = null;
-                    try
-                    {
-                        if(placePhoto != "")
-                        {
-                            // It then executes the task of image downloader
-                            myImg = task.execute("https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&maxheight=250&phot" +
-                                    "oreference=" + placePhoto + "&key=AIzaSyCmcj932D55W-U7bk2rPDmy0khT_u9JfJA\n").get();
-                        }
-
-                        else
-                        {
-                            myImg = task.execute("http://www.askdeb.com/wp-content/uploads/2013/07/No-Photo-Available.png").get();
-                        }
+                                POISocialMediaPosts post = new POISocialMediaPosts(source,uiDate, userName, postText, imageURL, bitImg, profileBitImg);
+                                place.addPosts(post);
 
 
-                    }
-                    catch (Exception e) {
-
-                        e.printStackTrace();
-                    }
-
-                    int poiIcon;
-
-                    if (allTypes[0].equals("Bar")|| allTypes[0].equals("Night Club"))
-                    {
-                        poiIcon = R.drawable.beerblack;
-                    }
-                    else if (allTypes[0].equals("Restaurant"))
-                    {
-                        poiIcon = R.drawable.foodblack;
-                    }
-                    else if (allTypes[0].equals("Cafe"))
-                    {
-                        poiIcon = R.drawable.coffeeblack;
-                    }
-                    else
-                    {
-                        poiIcon = R.drawable.otherblack;
-                    }
-
-                    double roundUp = CalculateLatLngDistance.distance(newUserLocation.latitude,newUserLocation.longitude,Double.parseDouble(locationLat) ,Double.parseDouble(locationLng) ,"K");
-
-                    // Notihng is on list...add away
-                    if(masterList.size() <= 0){
-                        Places newPOI = new Places(name, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), myImg, poiIcon, roundUp);
-                        masterList.add(newPOI);
-
-                    }
-
-                    // To avoid adding duplicates i.e. some pubs are also restaurants
-                    else{
-                        boolean isOnList = false;
-                        for (Places place : masterList) {
-
-                            if (place.getPlaceName().equals(name)) {
-                                isOnList = true;
-                                break;
                             }
 
                         }
-                        // Only add it if it is not already on the list
-                        if(!isOnList){
-                            Places newPOI = new Places(name, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), myImg, poiIcon, roundUp);
-                            masterList.add(newPOI);
 
+                        else{
+
+                            Log.i("Posts","Zero posts");
                         }
+
+                    }
+                    catch (JSONException e) {
+
+                        Log.i("JSON Search Status", "Something went wrong in JSON process.Check array access");
+
                     }
 
-                    //   Log.i("Counter", jsonCounter + "\n");
-                    // Log.i("LatLng", locationLat + " " + locationLng + "\n");
-                    //  Log.i("Location Name",name + "\n");
-                    // Log.i("Types", allTypes[0] + "," + allTypes[1]+ "," + allTypes[2]+ "\n");
-                    // Log.i("Location Address", address + "\n");
-                    // Log.i("Picture", placePhoto + "\n");
 
-                    jsonCounter++;
 
                 }
 
 
-                // If there is another results page, pageToken will have a value and return to the JSON() to read the next URL
-                if(pageToken != "" )
-                {
-                    // findJSON(); // commented out because I decided I only want one page that has 20 results
-                    //  Log.i("Could load more pages", pageToken + "\n");
-                    jsonCounter = 1;
 
-                    if(counter==4) {
-                        Intent i = new Intent(SplashScreen.this, MainActivity.class);
-                        startActivity(i);
-                        Toast.makeText(getApplicationContext(), "POIs in your area uploaded", Toast.LENGTH_LONG).show();
-
-                        // close this activity
-                        finish();
-                    }
-                }
-
-                // If it is empty that means that there are no more results pages and the process is complete
-                else
-                {
-                    Log.i("JSON Search Status", " Request Complete");
-                    jsonCounter = 1;
-
-                    if(counter==4) {
-                        Intent i = new Intent(SplashScreen.this, MainActivity.class);
-                        startActivity(i);
-                        Toast.makeText(getApplicationContext(), "POIs in your area uploaded", Toast.LENGTH_LONG).show();
-
-                        // close this activity
-                        finish();
+                    for(Places place: masterList) {
+                       String test1 = place.getPlaceName();
+                        int test2 =  place.getPosts().size();
+                        Log.i("Tester  ", test1 + "    " + test2);
                     }
 
-                }
 
+                Intent i = new Intent(SplashScreen.this, MainActivity.class);
+                startActivity(i);
+                Toast.makeText(getApplicationContext(), "POIs in your area uploaded", Toast.LENGTH_LONG).show();
 
-            } catch (JSONException e) {
-
-                Log.i("JSON Search Status", "Something went wrong in JSON process.Check array access");
-
+                // close this activity
+                finish();
             }
+
+
+
+
+
 
 
 
         }
     }
 
-    public String[] sortTypes(String[] allTypes){
 
-        // Improving the format
-        for(int j = 0; j < allTypes.length;j++)
+
+
+
+
+
+
+    public class InstagramTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... urls)
         {
-            switch (allTypes[j]) {
-                case "\"bar\"":
 
-                    allTypes[j] = "Bar";
-                    break;
-                case "\"night_club\"":
-                    allTypes[j] = "Night Club";
-                    break;
-                case "\"amusement_park\"":
+            String response = "";
+            URL url;
+            HttpURLConnection urlConnection = null;
+            try
+            {
+                url = new URL(urls[0]);
+                urlConnection = (HttpURLConnection) url.openConnection();
+                InputStream in = urlConnection.getInputStream();
+                InputStreamReader reader = new InputStreamReader(in);
 
-                    allTypes[j] = "Amusements";
-                    break;
-                case "\"art_gallery\"":
+                int data = reader.read();
+                while (data != -1)
+                {
+                    char current = (char) data;
+                    response += current;
+                    data = reader.read();
 
-                    allTypes[j] = "Art Gallery";
+                }
 
-                    break;
-                case "\"cafe\"":
+                return response;
 
-                    allTypes[j] = "Cafe";
-
-                    break;
-                case "\"casino\"":
-
-                    allTypes[j] = "Casino";
-
-                    break;
-
-                case "\"zoo\"":
-
-                    allTypes[j] = "Zoo";
-
-                    break;
-
-                case "\"stadium\"":
-                    allTypes[j] = "Stadium";
-
-                    break;
-                case "\"shopping_mall\"":
-
-                    allTypes[j] = "Shopping Centre";
-
-                    break;
-
-                case "\"movie_theater\"":
-
-                    allTypes[j] = "Cinema";
-
-                    break;
-                case "\"restaurant\"":
-
-                    allTypes[j] = "Restaurant";
-
-                    break;
-                case "\"museum\"":
-
-                    allTypes[j] = "Museum";
-
-                    break;
-
-                case "\"food\"":
-
-                    allTypes[j] = "Food";
-
-                    break;
-
-                case "\"meal_takeaway\"":
-
-                    allTypes[j] = "Take Away";
-
-                    break;
-
-                case "\"bakery\"":
-
-                    allTypes[j] = "Bakery";
-
-                    break;
-
-                case "\"lodging\"":
-
-                    allTypes[j] = "Accommodation";
-
-                    break;
-                default:
-                    allTypes[j] = "";
-                    break;
+            } catch (Exception e) {
+                Log.i("Instagram API Search", "Error reading source code of URL");
+                response = "nothing";
             }
-
+            return response;
         }
-        return allTypes;
+
     }
+
+
 
     // This happens on the background thread and is called on when performing JSO read through
     public class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
@@ -558,11 +658,9 @@ public class SplashScreen extends Activity implements LocationListener {
                 connection.connect();
                 InputStream inputStream = connection.getInputStream();
 
-                // Convert content of URL to bitmap
-                Bitmap myBitmap = BitmapFactory.decodeStream(inputStream);
 
                 //return to the original metohd that called it
-                return myBitmap;
+                return BitmapFactory.decodeStream(inputStream);
 
 
             } catch (Exception e) {
@@ -577,6 +675,8 @@ public class SplashScreen extends Activity implements LocationListener {
 
 
     }
+
+
 
     public void getLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -611,7 +711,7 @@ public class SplashScreen extends Activity implements LocationListener {
 
             // Be sure to get the most recent whereabouts of user
             // the provider we are using. minimum time between location updates, number of meters, context(the app)
-            locationManager.requestLocationUpdates(provider, 200, 1, this);
+            locationManager.requestLocationUpdates(provider, 500, 1, this);
 
 
             if (location != null) {
@@ -629,10 +729,6 @@ public class SplashScreen extends Activity implements LocationListener {
 
         }
     }
-
-
-
-    // The important method for updating the users location
 
     @Override
     public void onLocationChanged(Location location) {

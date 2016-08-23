@@ -29,6 +29,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.location.places.Place;
 
+import java.util.ArrayList;
+
 public class PlaceDetail extends AppCompatActivity {
 
     private ViewPager viewPager;
@@ -43,6 +45,9 @@ public class PlaceDetail extends AppCompatActivity {
     static Bitmap image;
     static boolean fav;
 
+    static int masterPostCounter, counterPast6Hours, counter6to12, counter12to18, counter18to24;
+
+    static ArrayList<POISocialMediaPosts> posts;
 
 
     @Override
@@ -83,6 +88,13 @@ public class PlaceDetail extends AppCompatActivity {
             image = MainActivity.selectedPlaces.get(chosenPOIArrayPos).getPlaceImage();
             fav = MainActivity.selectedPlaces.get(chosenPOIArrayPos).getisFavd();
 
+             masterPostCounter = MainActivity.selectedPlaces.get(chosenPOIArrayPos).getMasterPostCounter();
+             counterPast6Hours = MainActivity.selectedPlaces.get(chosenPOIArrayPos).getCounterPast6Hours();
+             counter6to12 = MainActivity.selectedPlaces.get(chosenPOIArrayPos).getCounter6to12();
+             counter12to18 = MainActivity.selectedPlaces.get(chosenPOIArrayPos).getCounter12to18();
+             counter18to24 = MainActivity.selectedPlaces.get(chosenPOIArrayPos).getCounter18to24();
+             posts = MainActivity.selectedPlaces.get(chosenPOIArrayPos).getPosts();
+
         } catch(Exception e)
         {
             // If the try fails, this means the intent was sent from the map. The map activity passes
@@ -104,6 +116,14 @@ public class PlaceDetail extends AppCompatActivity {
                         address = selectedPlace.getPlaceAddress();
                         image = selectedPlace.getPlaceImage();
                         fav = selectedPlace.getisFavd();
+
+                        masterPostCounter = selectedPlace.getMasterPostCounter();
+                        counterPast6Hours = selectedPlace.getCounterPast6Hours();
+                        counter6to12 = selectedPlace.getCounter6to12();
+                        counter12to18 = selectedPlace.getCounter12to18();
+                        counter18to24 = selectedPlace.getCounter18to24();
+                        posts = selectedPlace.getPosts();
+
                     }
                 }
             }

@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
@@ -31,12 +32,14 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,8 +47,10 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -126,10 +131,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void showMarkerLegend(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Red markers are Drinks\n\n" +
-                "Blue markers are Food\n\n" +
-                "Brown markers are Coffee\n\n" +
-                "Purple markers are Others\n\n" +
+        builder.setMessage("Blue markers are bars and night clubs\n\n" +
+                "Green markers are restaurants and take outs\n\n" +
+                "Orange markers are coffee shops\n\n" +
+                "Red markers are museums, art galleries, stadiums, zoos and more\n\n" +
                 "Starred markers are your saved Favourites")
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .setTitle("Know your marker meanings!")
@@ -187,12 +192,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //clear the map for new markers
         mMap.clear();
 
-        Collections.sort(MainActivity.selectedPlaces, new Comparator<Places>() {
-            @Override
-            public int compare(Places place1, Places place2) {
-                return Double.compare(place1.getDistanceFromUser(),place2.getDistanceFromUser());
-            }
-        });
+       Collections.sort(MainActivity.selectedPlaces, new Comparator<Places>() {
+         @Override
+           public int compare(Places place1, Places place2) {
+            return Double.compare(place1.getDistanceFromUser(),place2.getDistanceFromUser());
+           }
+       });
 
         if(MainActivity.selectedPlaces.size() != -1 && MainActivity.selectedPlaces.size() != 0)
         {
@@ -203,49 +208,37 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             // start for loop at 1 to avoid default 0,0 latlng
             for (int i = 0; i < MainActivity.selectedPlaces.size(); i++)
             {
-
-                if(MainActivity.selectedPlaces.get(i).getPlaceMasterType().equalsIgnoreCase("Drink"))
-                {
+                if(!MainActivity.selectedPlaces.get(i).getisFavd()){
 
                     // the below code redraws all the saved places every time
                     mMap.addMarker(new MarkerOptions()
                             .position(MainActivity.selectedPlaces.get(i).getPlacePosition())
                             .title(MainActivity.selectedPlaces.get(i).getPlaceName())
-                            .snippet(MainActivity.selectedPlaces.get(i).getPlaceMasterType())
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                            .icon(BitmapDescriptorFactory.fromResource(MainActivity.selectedPlaces.get(i).getPoiMarker())));
+                    if(MainActivity.searchMode) {
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MainActivity.selectedPlaces.get(i).getPlacePosition(), 12));
+                    }
+                    else{
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SplashScreen.newUserLocation, 12));
+                    }
                 }
 
-                if(MainActivity.selectedPlaces.get(i).getPlaceMasterType().equals("Fun")) {
-
-                    // the below code redraws all the saved places every time
-                    mMap.addMarker(new MarkerOptions()
-                            .position(MainActivity.selectedPlaces.get(i).getPlacePosition())
-                            .title(MainActivity.selectedPlaces.get(i).getPlaceName())
-                            .snippet(MainActivity.selectedPlaces.get(i).getPlaceMasterType())
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
-                }
-
-                if(MainActivity.selectedPlaces.get(i).getPlaceMasterType().equals("Food")) {
-
-                    // the below code redraws all the saved places every time
-                    mMap.addMarker(new MarkerOptions()
-                            .position(MainActivity.selectedPlaces.get(i).getPlacePosition())
-                            .title(MainActivity.selectedPlaces.get(i).getPlaceName())
-                            .snippet(MainActivity.selectedPlaces.get(i).getPlaceMasterType())
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                }
-
-                if(MainActivity.selectedPlaces.get(i).getPlaceMasterType().equals("Coffee")) {
-
-                    // the below code redraws all the saved places every time
-                    mMap.addMarker(new MarkerOptions()
-                            .position(MainActivity.selectedPlaces.get(i).getPlacePosition())
-                            .title(MainActivity.selectedPlaces.get(i).getPlaceName())
-                            .snippet(MainActivity.selectedPlaces.get(i).getPlaceMasterType())
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
+                else{
+                        // the below code redraws all the saved places every time
+                        mMap.addMarker(new MarkerOptions()
+                                .position(MainActivity.selectedPlaces.get(i).getPlacePosition())
+                                .title(MainActivity.selectedPlaces.get(i).getPlaceName())
+                                .icon(BitmapDescriptorFactory.fromResource(MainActivity.selectedPlaces.get(i).getPoiFavdMarker())));
+                    if(MainActivity.searchMode) {
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MainActivity.selectedPlaces.get(i).getPlacePosition(), 12));
+                    }
+                    else{
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SplashScreen.newUserLocation, 12));
+                    }
                 }
 
             }
+
 
             if (mMap != null) {
                 // mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(newUserLocation, 12)); // the position and zoom value of map
@@ -257,7 +250,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             .position(SplashScreen.newUserLocation)
                             .title("Your location")
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.usermarker)));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SplashScreen.newUserLocation, 12));
+
 
                     //MainActivity.locationManager.removeUpdates(this);
                     //Log.i("Listener", "Stopped listening for user movement"); // WHICH MEANS ITS TURNED OFF UNTIL Map is restarted
@@ -267,22 +260,44 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
 
-        // Setting up my custom inflaters
-        googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
+        {
             @Override
-            public View getInfoWindow(Marker marker) {
+            public boolean onMarkerClick(Marker marker)
+            {
+                for (Places markerData : MainActivity.selectedPlaces) {
+                    if (markerData.getPlaceName().equals(marker.getTitle())) {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markerData.getPlacePosition().latitude + (double) 50 / Math.pow(2, 12), markerData.getPlacePosition().longitude), 13));
+
+                    }}
+                marker.showInfoWindow();
+                return true;
+            }
+        });
+
+
+
+            // Setting up my custom inflaters
+            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter()
+
+            {
+                @Override
+                public View getInfoWindow (Marker marker){
+
                 return null;
             }
 
-            @Override
-            public View getInfoContents(Marker marker) {
+
+                @Override
+                public View getInfoContents (Marker marker){
 
                 for (Places markerData : MainActivity.selectedPlaces) {
                     if (markerData.getPlaceName().equals(marker.getTitle())) {
 
+
                         // create info contents as View
                         View contentView = getLayoutInflater().inflate(R.layout.info_window_contents, null);
-                        //View.inflate(getApplicationContext(), R.layout.info_window_contents, null);
+                        // View.inflate(getApplicationContext(), R.layout.info_window_contents, null);
 
                         // Set image
                         ImageView contentImageView = (ImageView) contentView.findViewById(R.id.info_window_image);
@@ -296,24 +311,33 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         TextView contentSnippetTextView = (TextView) contentView.findViewById(R.id.info_window_snippet);
                         contentSnippetTextView.setText(markerData.getPlaceAddress());
 
+
+                       // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markerData.getPlacePosition().latitude + (double) 200 / Math.pow(2, 12), markerData.getPlacePosition().longitude), 12));
+
                         // return newly created View
                         return contentView;
                     }
+
                 }
                 return null;
-            }
-        });
+            }});
 
-        // When Info Window is pushed, it will take user to new activity for the POI
-        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(MapsActivity.this,PlaceDetail.class);
+            // When Info Window is pushed, it will take user to new activity for the POI
+            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
+
+            {
+                @Override
+                public void onInfoWindowClick (Marker marker){
+                Intent intent = new Intent(MapsActivity.this, PlaceDetail.class);
                 intent.putExtra("Place", marker.getTitle());
                 startActivity(intent);
 
             }
-        });
+            }
+
+            );
+
+
     }
 
 

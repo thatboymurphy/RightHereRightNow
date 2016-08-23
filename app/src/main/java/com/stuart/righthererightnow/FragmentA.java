@@ -99,7 +99,7 @@ public class FragmentA extends Fragment
                         // the favourites array
                         if(PlaceDetail.name.equals(masterListItem.getPlaceName()))
                         {
-                            MainActivity.myFavourites.add(masterListItem);
+
                             masterListItem.setPlaceFav(true);
                         }
                     }
@@ -109,7 +109,9 @@ public class FragmentA extends Fragment
                     {
                         if(PlaceDetail.name.equals(selectedItems.getPlaceName()))
                         {
+
                             selectedItems.setPlaceFav(true);
+                            MainActivity.myFavourites.add(selectedItems); // this used to be adding the master list one instead
                         }
                     }
 
