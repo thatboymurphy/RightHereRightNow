@@ -52,13 +52,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class SplashScreen extends Activity implements LocationListener {
-    // Hard Coded Lat Lngs
-    //Double lat = 52.655746;
-    //Double lng = -8.619048;
-
-    //Double lat =  52.674166;
-    //Double lng =  -8.573931;
-
     int counter = 0;
 
     // An array for types of Places
@@ -90,11 +83,11 @@ public class SplashScreen extends Activity implements LocationListener {
     DownloadTask task1, task2, task3,task4;
 
 
-    String accessToken = "543153997.3bb3331.66f453d8e7d24f638824352145af3263";
-    String currentDateFormatted = "";
-    DateFormat formatter = null;
+    static String accessToken = "543153997.3bb3331.66f453d8e7d24f638824352145af3263";
+    static String currentDateFormatted = "";
+   static  DateFormat formatter = null;
 
-    DateFormat uiFormatter = null;
+    static DateFormat uiFormatter = null;
 
 
 
@@ -118,7 +111,7 @@ public class SplashScreen extends Activity implements LocationListener {
 
         //Date formatting
         formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-        uiFormatter = new SimpleDateFormat("dd-MMMM-yyyy HH:mm:ss");
+        uiFormatter = new SimpleDateFormat("dd-MMM-yy  HH:mm");
 
         //get current date time with Date()
         Date now = new Date();
@@ -170,6 +163,7 @@ public class SplashScreen extends Activity implements LocationListener {
                     else {
                         task3.execute(call3);
                     }
+
 
                     task4 = new DownloadTask();
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
@@ -263,6 +257,7 @@ public class SplashScreen extends Activity implements LocationListener {
                         String address = "";
                         try {
                             address = obj2.getString("vicinity");
+                           //address.replace(",","\n");
                         } catch (Exception e) {
                             address = "No Found Address";
                         }
@@ -349,6 +344,31 @@ public class SplashScreen extends Activity implements LocationListener {
                             e.printStackTrace();
                         }
 
+                        String rating = "";
+                        try {
+                            // Getting the name of a place
+                            rating = obj2.getString("rating");
+                        } catch (Exception e) {
+                            rating = "No Rating Set";
+                        }
+
+                        String openStatus = "";
+                        // Getting the location of a place
+                        try {
+                            String geoNest = obj2.getJSONObject("opening_hours").toString();
+                            JSONObject obj3 = new JSONObject(geoNest);
+                            openStatus = obj3.getString("open_now");
+
+                            if(openStatus.equals("true")){
+                                openStatus = "OPEN";
+                            }
+                            else{
+                                openStatus = "CLOSED";
+                            }
+
+                        } catch (Exception e) {
+                            openStatus = "It is a mystery!";
+                        }
 
                         // Calculate the POIs distance from user
                         double roundUp = CalculateLatLngDistance.distance(newUserLocation.latitude, newUserLocation.longitude, Double.parseDouble(locationLat), Double.parseDouble(locationLng), "K");
@@ -365,7 +385,7 @@ public class SplashScreen extends Activity implements LocationListener {
                         // If notihng is on list...add away
                         if (masterList.size() <= 0) {
 
-                            Places newPOI = new Places(name, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), photoRef, myImg, poiIcon,poiMarker,poiFavdMarker, roundUp,
+                            Places newPOI = new Places(name,rating,openStatus, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), photoRef, myImg, poiIcon,poiMarker,poiFavdMarker, roundUp,
                                     masterPostCounter, counterPast6Hours, counter6to12, counter12to18, counter18to24, userPosts);
                             masterList.add(newPOI);
 
@@ -377,13 +397,13 @@ public class SplashScreen extends Activity implements LocationListener {
                             for (Places place : masterList) {
                                 if (place.getPlaceName().equals(name)) {
                                     isOnList = true;
-                                    break;
+                                    break; //break here if it finds one copy
                                 }
                             }
                             // Only add it if it is not already on the list
                             if (!isOnList) {
                                 POISocialMediaPosts post = new POISocialMediaPosts();
-                                Places newPOI = new Places(name, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), photoRef, myImg, poiIcon,poiMarker,poiFavdMarker, roundUp,
+                                Places newPOI = new Places(name, rating,openStatus, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), photoRef, myImg, poiIcon,poiMarker,poiFavdMarker, roundUp,
                                         masterPostCounter, counterPast6Hours, counter6to12, counter12to18, counter18to24, userPosts);
                                 masterList.add(newPOI);
                             }
@@ -409,7 +429,7 @@ public class SplashScreen extends Activity implements LocationListener {
                 for(Places place: masterList) {
 
                       userRecentMedia = "https://api.instagram.com/v1/media/search?lat=" +
-                            place.getPlacePosition().latitude + "&lng=" + place.getPlacePosition().longitude + "&distance=20&access_token=" + accessToken;
+                            place.getPlacePosition().latitude + "&lng=" + place.getPlacePosition().longitude + "&distance=140&access_token=" + accessToken;
 
                     try
                     {
@@ -438,7 +458,6 @@ public class SplashScreen extends Activity implements LocationListener {
 
                             JSONArray jsonArr = obj1.getJSONArray("data");
 
-
                             for (int i = 0; i < jsonArr.length(); i++) {
                                 String resource = jsonArr.getJSONObject(i).toString();
                                 JSONObject obj2 = new JSONObject(resource);
@@ -454,26 +473,11 @@ public class SplashScreen extends Activity implements LocationListener {
 
                                 } catch (Exception e) {
 
-                                    e.printStackTrace();
-                                }
-
-                                geoNest = obj2.getJSONObject("caption").toString(); //RESOURCE OBJECT
-                                obj3 = new JSONObject(geoNest);
-                                postText = obj3.getString("text");
-                                userName = obj3.getJSONObject("from").getString("username"); //REACHED THE FIELDS
-                                profilePicUrl = obj3.getJSONObject("from").getString("profile_picture");
-                                ImageDownloader task2 = new ImageDownloader();
-                                try {
-                                    // It then executes the task of image downloader
-                                    profileBitImg = task2.execute(profilePicUrl).get();
-
-                                } catch (Exception e) {
-
-                                    e.printStackTrace();
+                                        e.printStackTrace();
                                 }
 
 
-                                date = obj3.getString("created_time");
+                              date = obj2.getString("created_time");
                                 long x = Long.parseLong(date) * 1000;
                                 Date dateTrans = new Date(x);
 
@@ -526,6 +530,30 @@ public class SplashScreen extends Activity implements LocationListener {
 
                                 }
                                 catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                                try {
+                                    geoNest = obj2.getJSONObject("caption").toString(); //RESOURCE OBJECT
+                                    obj3 = new JSONObject(geoNest);
+                                    postText = obj3.getString("text");
+                                }
+                                catch(Exception e){
+                                    postText = "";
+                                }
+
+
+                                geoNest = obj2.getJSONObject("user").toString(); //RESOURCE OBJECT
+                                obj3 = new JSONObject(geoNest);
+                                userName = obj3.getString("username");
+                                profilePicUrl = obj3.getString("profile_picture");
+                                ImageDownloader task2 = new ImageDownloader();
+                                try {
+                                    // It then executes the task of image downloader
+                                    profileBitImg = task2.execute(profilePicUrl).get();
+
+                                } catch (Exception e) {
+
                                     e.printStackTrace();
                                 }
 
@@ -644,7 +672,7 @@ public class SplashScreen extends Activity implements LocationListener {
 
         // the String... is like an array 'varargs'
         @Override
-        protected Bitmap doInBackground(String... urls) {
+        protected Bitmap doInBackground(String... urls){
 
 
             URL url;

@@ -17,6 +17,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.location.Address;
 import android.location.Criteria;
@@ -24,6 +26,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -32,6 +35,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -40,6 +44,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,9 +60,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -69,6 +83,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     Marker userMarker = null;
 
     GoogleMap mMap;
+    ProgressBar wheel;
 
 
     @Override
@@ -216,10 +231,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             .title(MainActivity.selectedPlaces.get(i).getPlaceName())
                             .icon(BitmapDescriptorFactory.fromResource(MainActivity.selectedPlaces.get(i).getPoiMarker())));
                     if(MainActivity.searchMode) {
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MainActivity.selectedPlaces.get(i).getPlacePosition(), 12));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MainActivity.selectedPlaces.get(i).getPlacePosition(), 13));
                     }
                     else{
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SplashScreen.newUserLocation, 12));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SplashScreen.newUserLocation, 13));
                     }
                 }
 
@@ -230,10 +245,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 .title(MainActivity.selectedPlaces.get(i).getPlaceName())
                                 .icon(BitmapDescriptorFactory.fromResource(MainActivity.selectedPlaces.get(i).getPoiFavdMarker())));
                     if(MainActivity.searchMode) {
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MainActivity.selectedPlaces.get(i).getPlacePosition(), 12));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MainActivity.selectedPlaces.get(i).getPlacePosition(), 13));
                     }
                     else{
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SplashScreen.newUserLocation, 12));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SplashScreen.newUserLocation, 13));
                     }
                 }
 
@@ -259,6 +274,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
         }
+        else{
+
+                Toast.makeText(getApplicationContext(), "Nothing from the top POIs in this area", Toast.LENGTH_SHORT).show();
+
+        }
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
         {
@@ -267,8 +287,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             {
                 for (Places markerData : MainActivity.selectedPlaces) {
                     if (markerData.getPlaceName().equals(marker.getTitle())) {
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markerData.getPlacePosition().latitude + (double) 50 / Math.pow(2, 12), markerData.getPlacePosition().longitude), 13));
-
+                        if(mMap.getCameraPosition().zoom>14){
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markerData.getPlacePosition().latitude + (double) 100 / Math.pow(2, mMap.getCameraPosition().zoom), markerData.getPlacePosition().longitude), mMap.getCameraPosition().zoom));
+                        }
+                        else {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markerData.getPlacePosition().latitude + (double) 100 / Math.pow(2, 14), markerData.getPlacePosition().longitude), 14));
+                        }
                     }}
                 marker.showInfoWindow();
                 return true;
@@ -311,8 +335,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         TextView contentSnippetTextView = (TextView) contentView.findViewById(R.id.info_window_snippet);
                         contentSnippetTextView.setText(markerData.getPlaceAddress());
 
+                        wheel = (ProgressBar) contentView.findViewById(R.id.wheel);
+                        wheel.setVisibility(View.GONE);
 
-                       // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(markerData.getPlacePosition().latitude + (double) 200 / Math.pow(2, 12), markerData.getPlacePosition().longitude), 12));
+
 
                         // return newly created View
                         return contentView;
@@ -326,11 +352,195 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
 
             {
+
                 @Override
                 public void onInfoWindowClick (Marker marker){
-                Intent intent = new Intent(MapsActivity.this, PlaceDetail.class);
-                intent.putExtra("Place", marker.getTitle());
-                startActivity(intent);
+
+
+                    if (!marker.getTitle().equals("Your location")) {
+                        for (Places markerData : MainActivity.selectedPlaces)
+                        {
+                            if (markerData.getPlaceName().equals(marker.getTitle()))
+                            {
+
+                                wheel.setVisibility(View.VISIBLE);
+
+                                for (Places place : SplashScreen.masterList)
+                                {
+
+                                    if (place.getPlaceName().equals(markerData.getPlaceName())) {
+
+                                        place.setMasterPostCounter(0);
+                                        place.setCounterPast6Hours(0);
+                                        place.setCounter6to12(0);
+                                        place.setCounter12to18(0);
+                                        place.setCounter18to24(0);
+
+                                    }
+
+                                }
+
+                                markerData.setMasterPostCounter(0);
+                                markerData.setCounterPast6Hours(0);
+                                markerData.setCounter6to12(0);
+                                markerData.setCounter12to18(0);
+                                markerData.setCounter18to24(0);
+
+                                markerData.posts.clear(); // clear out old data as it will be reloaded with requestbe reloaded with request
+
+                                String userRecentMedia = "";
+                                InstagramTask instaTask;
+                                String instaResponse = "";
+                                String emptyInsta = "{\"meta\": {\"code\": 200}, \"data\": []}";
+
+                                userRecentMedia = "https://api.instagram.com/v1/media/search?lat=" +
+                                        markerData.getPlacePosition().latitude + "&lng=" + markerData.getPlacePosition().longitude + "&distance=140&access_token=" + SplashScreen.accessToken;
+
+                                try {
+                                    instaTask = new InstagramTask();
+                                    instaResponse = instaTask.execute(userRecentMedia).get();
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    Log.i("URL Search", "Unsuccessful");
+                                }
+
+                                String imageURL = "";
+                                String postText = "";
+                                String userName = "";
+                                String profilePicUrl = "";
+                                String date = "";
+                                Bitmap bitImg = null;
+                                Bitmap profileBitImg = null;
+
+
+                                try {
+
+                                    if (!instaResponse.equals(emptyInsta)) {
+                                        JSONObject obj1 = new JSONObject(instaResponse);
+
+                                        JSONArray jsonArr = obj1.getJSONArray("data");
+
+
+                                        for (int i = 0; i < jsonArr.length(); i++) {
+                                            String resource = jsonArr.getJSONObject(i).toString();
+                                            JSONObject obj2 = new JSONObject(resource);
+
+                                            String geoNest = obj2.getJSONObject("images").toString(); //RESOURCE OBJECT
+                                            JSONObject obj3 = new JSONObject(geoNest);
+                                            imageURL = obj3.getJSONObject("standard_resolution").getString("url"); //REACHED THE FIELDS
+
+                                            ImageDownloader task = new ImageDownloader();
+                                            try {
+                                                // It then executes the task of image downloader
+                                                bitImg = task.execute(imageURL).get();
+
+                                            } catch (Exception e) {
+
+                                                e.printStackTrace();
+                                            }
+
+
+                                                date = obj2.getString("created_time");
+
+
+
+                                                long x = Long.parseLong(date) * 1000;
+                                                Date dateTrans = new Date(x);
+
+                                                String imageDateFormatted = SplashScreen.formatter.format(dateTrans);
+
+                                                Date d1 = null;
+                                                Date d2 = null;
+
+                                                try {
+
+                                                    d1 = SplashScreen.formatter.parse(imageDateFormatted);
+                                                    d2 = SplashScreen.formatter.parse(SplashScreen.currentDateFormatted);
+
+                                                    //in milliseconds
+                                                    long diff = d2.getTime() - d1.getTime();
+
+                                                    long diffHours = diff / (60 * 60 * 1000) % 24;
+                                                    long diffDays = diff / (24 * 60 * 60 * 1000);
+
+
+                                                    if (diffDays < 1) {
+
+                                                        if (diffHours < 6) {
+                                                            markerData.setCounterPast6Hours(markerData.getCounterPast6Hours() + 1);
+
+                                                        } else if (diffHours >= 6 && diffHours < 12) {
+                                                            markerData.setCounter6to12(markerData.getCounter6to12() + 1);
+                                                        } else if (diffHours >= 12 && diffHours < 18) {
+                                                            markerData.setCounter12to18(markerData.getCounter12to18() + 1);
+                                                        } else {
+                                                            markerData.setCounter18to24(markerData.getCounter18to24() + 1);
+                                                        }
+
+                                                        markerData.setMasterPostCounter(markerData.getMasterPostCounter() + 1);
+
+
+                                                    } else {
+                                                        markerData.setMasterPostCounter(markerData.getMasterPostCounter() + 1);
+                                                    }
+
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+
+                                            try {
+                                                geoNest = obj2.getJSONObject("caption").toString(); //RESOURCE OBJECT
+                                                obj3 = new JSONObject(geoNest);
+                                                postText = obj3.getString("text");
+                                            }
+                                            catch(Exception e){
+                                                postText = "";
+                                            }
+
+
+                                            geoNest = obj2.getJSONObject("user").toString(); //RESOURCE OBJECT
+                                            obj3 = new JSONObject(geoNest);
+                                            userName = obj3.getString("username");
+                                            profilePicUrl = obj3.getString("profile_picture");
+                                            ImageDownloader task2 = new ImageDownloader();
+                                            try {
+                                                // It then executes the task of image downloader
+                                                profileBitImg = task2.execute(profilePicUrl).get();
+
+                                            } catch (Exception e) {
+
+                                                e.printStackTrace();
+                                            }
+
+                                            String uiDate = SplashScreen.uiFormatter.format(dateTrans);
+                                            String source = "Instagram";
+
+
+                                            POISocialMediaPosts post = new POISocialMediaPosts(source, uiDate, userName, postText, imageURL, bitImg, profileBitImg);
+                                            markerData.addPosts(post);
+
+                                        }
+
+                                    } else {
+
+                                        Log.i("Posts", "Zero posts");
+                                    }
+
+                                } catch (JSONException e) {
+
+                                    Log.i("JSON Search Status", "Something went wrong in JSON process.Check array access");
+
+                                }
+
+                            }
+                        }
+
+
+                        Intent intent = new Intent(MapsActivity.this, PlaceDetail.class);
+                        intent.putExtra("Place", marker.getTitle());
+                        startActivity(intent);
+                    }
 
             }
             }
@@ -340,10 +550,86 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    public class InstagramTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... urls)
+        {
+
+            String response = "";
+            URL url;
+            HttpURLConnection urlConnection = null;
+            try
+            {
+                url = new URL(urls[0]);
+                urlConnection = (HttpURLConnection) url.openConnection();
+                InputStream in = urlConnection.getInputStream();
+                InputStreamReader reader = new InputStreamReader(in);
+
+                int data = reader.read();
+                while (data != -1)
+                {
+                    char current = (char) data;
+                    response += current;
+                    data = reader.read();
+
+                }
+
+                return response;
+
+            } catch (Exception e) {
+                Log.i("Instagram API Search", "Error reading source code of URL");
+                response = "nothing";
+            }
+            return response;
+        }
+
+    }
+
+
+
+    // This happens on the background thread and is called on when performing JSO read through
+    public class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
+
+        // the String... is like an array 'varargs'
+        @Override
+        protected Bitmap doInBackground(String... urls) {
+
+
+            URL url;
+            HttpURLConnection connection = null; // think of it like a browser to fetch the contents
+
+            try {
+                //converts th URL to a valid URL
+                url = new URL(urls[0]);
+                connection = (HttpURLConnection) url.openConnection();
+
+                connection.connect();
+                InputStream inputStream = connection.getInputStream();
+
+
+                //return to the original metohd that called it
+                return BitmapFactory.decodeStream(inputStream);
+
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+
+
+            }
+            return null;
+
+        }
+
+
+    }
+
 
     @Override
     protected void onPause() {
         super.onPause();
+
         try {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling

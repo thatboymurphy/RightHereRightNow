@@ -247,6 +247,8 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
                         selectedPlaces.add(place);
                     }
 
+
+
                 }
 
 

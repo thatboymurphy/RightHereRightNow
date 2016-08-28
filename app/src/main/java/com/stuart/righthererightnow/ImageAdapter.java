@@ -42,6 +42,8 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
+
         ImageView imageView = new ImageView(mContext);
         imageView.setImageBitmap(PlaceDetail.posts.get(position).getImageBitmap());
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);

@@ -37,6 +37,10 @@ public class FragmentA extends Fragment
     TextView placeType;
     boolean isItFavd;
 
+    TextView distanceFrom;
+    TextView rating;
+    TextView openStatus;
+
 
     public FragmentA()
     {
@@ -52,9 +56,12 @@ public class FragmentA extends Fragment
 
         // Initialize the UI ayytibutes
         placeName = (TextView) view.findViewById(R.id.placeName);
-        placeAddress = (TextView) view.findViewById(R.id.placeAddress);
         placeType = (TextView) view.findViewById(R.id.placeType);
         placeImage = (ImageView) view.findViewById(R.id.placeImage);
+        placeAddress = (TextView) view.findViewById(R.id.placeAddress);
+        distanceFrom = (TextView) view.findViewById(R.id.placeDistance);
+        rating = (TextView) view.findViewById(R.id.rating);
+        openStatus = (TextView) view.findViewById(R.id.openStatus);
 
         String stringTypes = PlaceDetail.type+", "+PlaceDetail.type2+", "+PlaceDetail.type3;
 
@@ -63,7 +70,12 @@ public class FragmentA extends Fragment
         placeAddress.setText(PlaceDetail.address);
         placeType.setText(stringTypes);
         placeImage.setImageBitmap(PlaceDetail.image);
+        distanceFrom.setText(PlaceDetail.distance);
+        rating.setText(PlaceDetail.rating + "/5");
+        openStatus.setText(PlaceDetail.openStatus);
+
         isItFavd = PlaceDetail.fav;
+
 
         // Determining what the button should say
         if(isItFavd)

@@ -11,8 +11,6 @@
     android:layout_height="match_parent"
 >
 
-    <!-- TODO: Update blank fragment layout -->
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="300dp"
@@ -78,25 +76,100 @@
         android:paddingBottom="10dp" />
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:paddingTop="10dp"
+        android:paddingBottom="2dp"
+        android:paddingLeft="10dp"
+        android:textColor="@color/colorAccent"
+        android:layout_below="@+id/placeType"
+        android:text="Address"
+        android:id="@+id/addressStatic" />
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Address Of The Place"
         android:id="@+id/placeAddress"
-        android:layout_below="@+id/placeType"
+        android:layout_below="@+id/addressStatic"
         android:layout_alignParentStart="true"
         android:textSize="15sp"
-        android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:layout_alignEnd="@+id/ratingBar" />
+        android:paddingLeft="10dp" />
 
-    <RatingBar
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/ratingBar"
-        android:layout_alignBottom="@+id/favBtn"
-        android:layout_alignParentStart="true" />
+        android:textSize="20sp"
+        android:paddingTop="10dp"
+        android:paddingBottom="2dp"
+        android:paddingLeft="10dp"
+        android:textColor="@color/colorAccent"
+        android:text="Distance From You"
+        android:id="@+id/placeDistanceStatic"
+        android:layout_below="@+id/placeAddress"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Address Of The Place"
+        android:layout_alignParentStart="true"
+        android:textSize="15sp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:id="@+id/placeDistance"
+        android:layout_below="@+id/placeDistanceStatic"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:paddingTop="10dp"
+        android:paddingBottom="2dp"
+        android:paddingLeft="10dp"
+        android:textColor="@color/colorAccent"
+        android:text="Past Attendee Rating"
+        android:id="@+id/ratingStatic"
+        android:layout_below="@+id/placeDistance"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Address Of The Place"
+        android:layout_alignParentStart="true"
+        android:textSize="15sp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:id="@+id/rating"
+        android:layout_below="@+id/ratingStatic"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:paddingTop="10dp"
+        android:paddingBottom="2dp"
+        android:paddingLeft="10dp"
+        android:textColor="@color/colorAccent"
+        android:text="Open/Closed"
+        android:id="@+id/openOrNot"
+        android:layout_below="@+id/rating"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Address Of The Place"
+        android:layout_alignParentStart="true"
+        android:textSize="15sp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:id="@+id/openStatus"
+        android:layout_below="@+id/openOrNot"/>
 
 </RelativeLayout>
     </ScrollView>

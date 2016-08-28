@@ -63,7 +63,7 @@ public class SearchFeature extends AppCompatActivity {
             // TODO: Handle the error.
         }
 
-
+        findViewById(R.id.wheel).setVisibility(View.GONE);
     }
 
 
@@ -102,6 +102,8 @@ public class SearchFeature extends AppCompatActivity {
 
 
                 ((TextView) findViewById(R.id.searched_address)).setText("\nGive us a sec. Finding POI");
+
+                findViewById(R.id.wheel).setVisibility(View.VISIBLE);
 
 
                 call1 ="https://maps.googleapis.com/maps/api/place/details/json?placeid="+place.getId()+"&key="+browserKey;
@@ -189,11 +191,6 @@ public class SearchFeature extends AppCompatActivity {
                 JSONObject obj1 = new JSONObject(response);
                 JSONObject res = obj1.getJSONObject("result");
 
-
-                    //String resource = obj1.getJSONObject("results").toString();
-                   // Log.i("Check Point", resource);
-
-                    //JSONObject obj2 = new JSONObject(resource);
 
                     String name = "";
                     try {
@@ -298,6 +295,35 @@ public class SearchFeature extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+                String rating = "";
+                try {
+                    // Getting the name of a place
+                    rating = res.getString("rating");
+
+
+                } catch (Exception e) {
+                    rating = "No Set Rating";
+                }
+
+
+                String openStatus = "";
+                // Getting the location of a place
+                try {
+                    String geoNest = res.getJSONObject("opening_hours").toString();
+                    JSONObject obj3 = new JSONObject(geoNest);
+                    openStatus = obj3.getString("open_now");
+
+                    if(openStatus.equals("true")){
+                        openStatus = "OPEN";
+                    }
+                    else{
+                        openStatus = "CLOSED";
+                    }
+
+                } catch (Exception e) {
+                    openStatus = "It is a mystery!";
+                }
+
 
 
                 // Calculate the POIs distance from user
@@ -312,24 +338,11 @@ public class SearchFeature extends AppCompatActivity {
                 ArrayList<POISocialMediaPosts> userPosts = new ArrayList<POISocialMediaPosts>();
 
 
-                for(Places favd : MainActivity.myFavourites)
-                {
-                    if(name.equals(favd.getPlaceName())){
-                        MainActivity.selectedPlaces.add(favd);
-                        onSystem = true;
-
-                        Intent i = new Intent(SearchFeature.this, MapsActivity.class);
-                        startActivity(i);
-                        // close this activity
-                        finish();
-
-                    }
-
-                }
-                if(!onSystem) {
-                    for (Places master : SplashScreen.masterList) {
-                        if (name.equals(master.getPlaceName())) {
-                            MainActivity.selectedPlaces.add(master);
+                // Is it on your favourites list already
+                if(MainActivity.myFavourites.size()>0) {
+                    for (Places favd : MainActivity.myFavourites) {
+                        if (name.equals(favd.getPlaceName())) {
+                            MainActivity.selectedPlaces.add(favd);
                             onSystem = true;
 
                             Intent i = new Intent(SearchFeature.this, MapsActivity.class);
@@ -341,12 +354,30 @@ public class SearchFeature extends AppCompatActivity {
 
                     }
                 }
+                if(!onSystem) {
+                    // Check to see if it is already on the master list aka it is one of the nearby POI already found
+                    if(SplashScreen.masterList.size()>0) {
+                        for (Places master : SplashScreen.masterList) {
+                            if (name.equals(master.getPlaceName())) {
+                                MainActivity.selectedPlaces.add(master);
+                                onSystem = true;
+
+                                Intent i = new Intent(SearchFeature.this, MapsActivity.class);
+                                startActivity(i);
+                                // close this activity
+                                finish();
+
+                            }
+
+                        }
+                    }
+                }
 
                 if(!onSystem) {
                     try {
 
 
-                        Places newPOI = new Places(name, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), photoRef, myImg, poiIcon, poiMarker, poiFavdMarker, roundUp,
+                        Places newPOI = new Places(name,rating,openStatus, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), photoRef, myImg, poiIcon, poiMarker, poiFavdMarker, roundUp,
                                 masterPostCounter, counterPast6Hours, counter6to12, counter12to18, counter18to24, userPosts);
                         MainActivity.selectedPlaces.add(newPOI);
 

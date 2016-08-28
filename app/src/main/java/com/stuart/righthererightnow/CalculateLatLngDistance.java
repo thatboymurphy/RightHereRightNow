@@ -4,15 +4,8 @@ import java.util.*;
 import java.lang.*;
 import java.io.*;
 
-/**
- *
- * @author stuartmurphy
- */
 public class CalculateLatLngDistance {
 
-    /**
-     * @param args the command line arguments
-     */
 
     private double i;
 

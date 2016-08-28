@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.location.places.Place;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class PlaceDetail extends AppCompatActivity {
@@ -41,7 +42,7 @@ public class PlaceDetail extends AppCompatActivity {
     String chosenPOIName;
 
     // Place variables
-    static String name, address, type, type2,type3;
+    static String name, address, type, type2,type3, distance, openStatus, rating;
     static Bitmap image;
     static boolean fav;
 
@@ -62,6 +63,8 @@ public class PlaceDetail extends AppCompatActivity {
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
+
+        DecimalFormat df = new DecimalFormat("#0.0");
 
         //Setting up the back button
         android.app.ActionBar actionBar = getActionBar();
@@ -95,6 +98,12 @@ public class PlaceDetail extends AppCompatActivity {
              counter18to24 = MainActivity.selectedPlaces.get(chosenPOIArrayPos).getCounter18to24();
              posts = MainActivity.selectedPlaces.get(chosenPOIArrayPos).getPosts();
 
+
+            distance = df.format(MainActivity.selectedPlaces.get(chosenPOIArrayPos).getDistanceFromUser())+" km away";
+            rating = MainActivity.selectedPlaces.get(chosenPOIArrayPos).getRating();
+            openStatus = MainActivity.selectedPlaces.get(chosenPOIArrayPos).getOpenStatus();
+
+
         } catch(Exception e)
         {
             // If the try fails, this means the intent was sent from the map. The map activity passes
@@ -123,6 +132,10 @@ public class PlaceDetail extends AppCompatActivity {
                         counter12to18 = selectedPlace.getCounter12to18();
                         counter18to24 = selectedPlace.getCounter18to24();
                         posts = selectedPlace.getPosts();
+
+                        distance = df.format(selectedPlace.getDistanceFromUser())+" km away";
+                        rating = selectedPlace.getRating();
+                        openStatus = selectedPlace.getOpenStatus();
 
                     }
                 }

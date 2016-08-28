@@ -23,6 +23,8 @@ import java.util.ArrayList;
 public class Places {
 
     private String placeName;
+    private String rating;
+    private String openStatus;
     private String[] placeTypes;
 
 
@@ -57,14 +59,16 @@ public class Places {
     public Places()
     {
 
-        this("null",null,"null",null,"null", null,0,0,0,0.0,0,0,0,0,0,null);
+        this("null","null","null",null,"null",null,"null", null,0,0,0,0.0,0,0,0,0,0,null);
 
     }
 
-    public Places(String placeName, String[] placeTypes, String placeAddress, LatLng position,String photoRef, Bitmap placeImage, int poiIcon, int poiMarker, int poiFavdMarker, double distanceFromUser,
+    public Places(String placeName,String rating, String openStatus, String[] placeTypes, String placeAddress, LatLng position,String photoRef, Bitmap placeImage, int poiIcon, int poiMarker, int poiFavdMarker, double distanceFromUser,
                   int masterPostCounter,int counterPast6Hours, int counter6to12, int counter12to18, int counter18to24, ArrayList posts )
     {
         this.placeName = placeName;
+        this.rating=rating;
+        this.openStatus = openStatus;
         this.placeTypes = placeTypes;
         this.placeAddress = placeAddress;
         this.position = position;
@@ -106,6 +110,20 @@ public class Places {
     {
 
         return placeName;
+
+    }
+
+    public String getRating()
+    {
+
+        return rating;
+
+    }
+
+    public String getOpenStatus()
+    {
+
+        return openStatus;
 
     }
 
