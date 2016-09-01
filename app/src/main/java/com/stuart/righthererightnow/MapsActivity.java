@@ -2,12 +2,15 @@
 * Author: Stuart Murphy
 * Student ID: 10046828
 * Project: Masters Thesis
-* Date: 08/08/2016
+* Date: 29/08/2016
+*
+* Most Rec2nt 29th aug
 *
 * Description:
-* The following code is work in progress for my mobile application presentation. It is due
-* completion before the 29th of August 2016. This is for supervisors viewing only to see how the
-* code is currently looking.
+* This mobile application is for a MSc in Interactive Media in the University Of Limerick, The app
+* is capable of displaying near by places of interest and also present any recent social media activity
+* from that location. The idea is to present users with the most recent ongoings at places they are
+* near by right now. This work will stil lbe in development for the coming months.
 * */
 
 package com.stuart.righthererightnow;
@@ -76,7 +79,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener{    // changed from FragmentActivity to AppCompatActivity to get my action bar working
-                                                                                                        // Location listener is for user current location updates
+    // Location listener is for user current location updates
 
     // Create new user location objects here in avoid redrawing markers in the updates
     MarkerOptions user = new MarkerOptions();
@@ -128,13 +131,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }  );
 
+        Button filterBtn = (Button) findViewById(R.id.goFilters);
+
+        filterBtn.setVisibility(View.INVISIBLE);
+
+
+
         Button infoBtn = (Button) findViewById(R.id.infoBtn);
         infoBtn.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 // Clear out old list data if it is populated
-               showMarkerLegend();
+                showMarkerLegend();
 
             }
 
@@ -159,8 +168,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         SplashScreen.infoShown = true;
                     }
                 })
-        .show();
-       // AlertDialog alert = builder.create();
+                .show();
+        // AlertDialog alert = builder.create();
 
 
     }
@@ -197,7 +206,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-         mMap = googleMap;
+        mMap = googleMap;
 
         /* This if statement checks to see if the array has contents. If so the camera of the map is
         set to Limerick City. The for loop then iterates through the list of venues that were selected
@@ -207,12 +216,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //clear the map for new markers
         mMap.clear();
 
-       Collections.sort(MainActivity.selectedPlaces, new Comparator<Places>() {
-         @Override
-           public int compare(Places place1, Places place2) {
-            return Double.compare(place1.getDistanceFromUser(),place2.getDistanceFromUser());
-           }
-       });
+        Collections.sort(MainActivity.selectedPlaces, new Comparator<Places>() {
+            @Override
+            public int compare(Places place1, Places place2) {
+                return Double.compare(place1.getDistanceFromUser(),place2.getDistanceFromUser());
+            }
+        });
 
         if(MainActivity.selectedPlaces.size() != -1 && MainActivity.selectedPlaces.size() != 0)
         {
@@ -239,11 +248,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
 
                 else{
-                        // the below code redraws all the saved places every time
-                        mMap.addMarker(new MarkerOptions()
-                                .position(MainActivity.selectedPlaces.get(i).getPlacePosition())
-                                .title(MainActivity.selectedPlaces.get(i).getPlaceName())
-                                .icon(BitmapDescriptorFactory.fromResource(MainActivity.selectedPlaces.get(i).getPoiFavdMarker())));
+                    // the below code redraws all the saved places every time
+                    mMap.addMarker(new MarkerOptions()
+                            .position(MainActivity.selectedPlaces.get(i).getPlacePosition())
+                            .title(MainActivity.selectedPlaces.get(i).getPlaceName())
+                            .icon(BitmapDescriptorFactory.fromResource(MainActivity.selectedPlaces.get(i).getPoiFavdMarker())));
                     if(MainActivity.searchMode) {
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MainActivity.selectedPlaces.get(i).getPlacePosition(), 13));
                     }
@@ -274,11 +283,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
         }
-        else{
 
-                Toast.makeText(getApplicationContext(), "Nothing from the top POIs in this area", Toast.LENGTH_SHORT).show();
-
-        }
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
         {
@@ -301,19 +306,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-            // Setting up my custom inflaters
-            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter()
+        // Setting up my custom inflaters
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter()
 
-            {
-                @Override
-                public View getInfoWindow (Marker marker){
+        {
+            @Override
+            public View getInfoWindow (Marker marker){
 
                 return null;
             }
 
 
-                @Override
-                public View getInfoContents (Marker marker){
+            @Override
+            public View getInfoContents (Marker marker){
 
                 for (Places markerData : MainActivity.selectedPlaces) {
                     if (markerData.getPlaceName().equals(marker.getTitle())) {
@@ -335,10 +340,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         TextView contentSnippetTextView = (TextView) contentView.findViewById(R.id.info_window_snippet);
                         contentSnippetTextView.setText(markerData.getPlaceAddress());
 
-                        wheel = (ProgressBar) contentView.findViewById(R.id.wheel);
-                        wheel.setVisibility(View.GONE);
-
-
 
                         // return newly created View
                         return contentView;
@@ -348,204 +349,205 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return null;
             }});
 
-            // When Info Window is pushed, it will take user to new activity for the POI
-            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
+        // When Info Window is pushed, it will take user to new activity for the POI
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
 
-            {
+                                               {
 
-                @Override
-                public void onInfoWindowClick (Marker marker){
+                                                   @Override
+                                                   public void onInfoWindowClick (Marker marker){
 
 
-                    if (!marker.getTitle().equals("Your location")) {
-                        for (Places markerData : MainActivity.selectedPlaces)
-                        {
-                            if (markerData.getPlaceName().equals(marker.getTitle()))
-                            {
+                                                       //Toast.makeText(getApplicationContext(), "Fetching The Info", Toast.LENGTH_SHORT).show();
+                                                       if (!marker.getTitle().equals("Your location")) {
 
-                                wheel.setVisibility(View.VISIBLE);
+                                                           for (Places markerData : MainActivity.selectedPlaces)
+                                                           {
+                                                               if (markerData.getPlaceName().equals(marker.getTitle()))
+                                                               {
 
-                                for (Places place : SplashScreen.masterList)
-                                {
 
-                                    if (place.getPlaceName().equals(markerData.getPlaceName())) {
+                                                                   for (Places place : SplashScreen.masterList)
+                                                                   {
 
-                                        place.setMasterPostCounter(0);
-                                        place.setCounterPast6Hours(0);
-                                        place.setCounter6to12(0);
-                                        place.setCounter12to18(0);
-                                        place.setCounter18to24(0);
+                                                                       if (place.getPlaceName().equals(markerData.getPlaceName())) {
 
-                                    }
+                                                                           place.setMasterPostCounter(0);
+                                                                           place.setCounterPast6Hours(0);
+                                                                           place.setCounter6to12(0);
+                                                                           place.setCounter12to18(0);
+                                                                           place.setCounter18to24(0);
 
-                                }
+                                                                       }
 
-                                markerData.setMasterPostCounter(0);
-                                markerData.setCounterPast6Hours(0);
-                                markerData.setCounter6to12(0);
-                                markerData.setCounter12to18(0);
-                                markerData.setCounter18to24(0);
+                                                                   }
 
-                                markerData.posts.clear(); // clear out old data as it will be reloaded with requestbe reloaded with request
+                                                                   markerData.setMasterPostCounter(0);
+                                                                   markerData.setCounterPast6Hours(0);
+                                                                   markerData.setCounter6to12(0);
+                                                                   markerData.setCounter12to18(0);
+                                                                   markerData.setCounter18to24(0);
 
-                                String userRecentMedia = "";
-                                InstagramTask instaTask;
-                                String instaResponse = "";
-                                String emptyInsta = "{\"meta\": {\"code\": 200}, \"data\": []}";
+                                                                   markerData.posts.clear(); // clear out old data as it will be reloaded with requestbe reloaded with request
 
-                                userRecentMedia = "https://api.instagram.com/v1/media/search?lat=" +
-                                        markerData.getPlacePosition().latitude + "&lng=" + markerData.getPlacePosition().longitude + "&distance=140&access_token=" + SplashScreen.accessToken;
+                                                                   String userRecentMedia = "";
+                                                                   InstagramTask instaTask;
+                                                                   String instaResponse = "";
+                                                                   String emptyInsta = "{\"meta\": {\"code\": 200}, \"data\": []}";
 
-                                try {
-                                    instaTask = new InstagramTask();
-                                    instaResponse = instaTask.execute(userRecentMedia).get();
+                                                                   userRecentMedia = "https://api.instagram.com/v1/media/search?lat=" +
+                                                                           markerData.getPlacePosition().latitude + "&lng=" + markerData.getPlacePosition().longitude + "&distance=140&access_token=" + SplashScreen.accessToken + "&count=5";
 
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    Log.i("URL Search", "Unsuccessful");
-                                }
+                                                                   try {
+                                                                       instaTask = new InstagramTask();
+                                                                       instaResponse = instaTask.execute(userRecentMedia).get();
 
-                                String imageURL = "";
-                                String postText = "";
-                                String userName = "";
-                                String profilePicUrl = "";
-                                String date = "";
-                                Bitmap bitImg = null;
-                                Bitmap profileBitImg = null;
+                                                                   } catch (Exception e) {
+                                                                       e.printStackTrace();
+                                                                       Log.i("URL Search", "Unsuccessful");
+                                                                   }
 
+                                                                   String imageURL = "";
+                                                                   String postText = "";
+                                                                   String userName = "";
+                                                                   String profilePicUrl = "";
+                                                                   String date = "";
+                                                                   Bitmap bitImg = null;
+                                                                   Bitmap profileBitImg = null;
 
-                                try {
 
-                                    if (!instaResponse.equals(emptyInsta)) {
-                                        JSONObject obj1 = new JSONObject(instaResponse);
+                                                                   try {
 
-                                        JSONArray jsonArr = obj1.getJSONArray("data");
+                                                                       if (!instaResponse.equals(emptyInsta)) {
+                                                                           JSONObject obj1 = new JSONObject(instaResponse);
 
+                                                                           JSONArray jsonArr = obj1.getJSONArray("data");
 
-                                        for (int i = 0; i < jsonArr.length(); i++) {
-                                            String resource = jsonArr.getJSONObject(i).toString();
-                                            JSONObject obj2 = new JSONObject(resource);
 
-                                            String geoNest = obj2.getJSONObject("images").toString(); //RESOURCE OBJECT
-                                            JSONObject obj3 = new JSONObject(geoNest);
-                                            imageURL = obj3.getJSONObject("standard_resolution").getString("url"); //REACHED THE FIELDS
+                                                                           for (int i = 0; i < jsonArr.length(); i++) {
+                                                                               String resource = jsonArr.getJSONObject(i).toString();
+                                                                               JSONObject obj2 = new JSONObject(resource);
 
-                                            ImageDownloader task = new ImageDownloader();
-                                            try {
-                                                // It then executes the task of image downloader
-                                                bitImg = task.execute(imageURL).get();
+                                                                               String geoNest = obj2.getJSONObject("images").toString(); //RESOURCE OBJECT
+                                                                               JSONObject obj3 = new JSONObject(geoNest);
+                                                                               imageURL = obj3.getJSONObject("standard_resolution").getString("url"); //REACHED THE FIELDS
 
-                                            } catch (Exception e) {
+                                                                               ImageDownloader task = new ImageDownloader();
+                                                                               try {
+                                                                                   // It then executes the task of image downloader
+                                                                                   bitImg = task.execute(imageURL).get();
 
-                                                e.printStackTrace();
-                                            }
+                                                                               } catch (Exception e) {
 
+                                                                                   e.printStackTrace();
+                                                                               }
 
-                                                date = obj2.getString("created_time");
 
+                                                                               date = obj2.getString("created_time");
 
 
-                                                long x = Long.parseLong(date) * 1000;
-                                                Date dateTrans = new Date(x);
 
-                                                String imageDateFormatted = SplashScreen.formatter.format(dateTrans);
+                                                                               long x = Long.parseLong(date) * 1000;
+                                                                               Date dateTrans = new Date(x);
 
-                                                Date d1 = null;
-                                                Date d2 = null;
+                                                                               String imageDateFormatted = SplashScreen.formatter.format(dateTrans);
 
-                                                try {
+                                                                               Date d1 = null;
+                                                                               Date d2 = null;
 
-                                                    d1 = SplashScreen.formatter.parse(imageDateFormatted);
-                                                    d2 = SplashScreen.formatter.parse(SplashScreen.currentDateFormatted);
+                                                                               try {
 
-                                                    //in milliseconds
-                                                    long diff = d2.getTime() - d1.getTime();
+                                                                                   d1 = SplashScreen.formatter.parse(imageDateFormatted);
+                                                                                   d2 = SplashScreen.formatter.parse(SplashScreen.currentDateFormatted);
 
-                                                    long diffHours = diff / (60 * 60 * 1000) % 24;
-                                                    long diffDays = diff / (24 * 60 * 60 * 1000);
+                                                                                   //in milliseconds
+                                                                                   long diff = d2.getTime() - d1.getTime();
 
+                                                                                   long diffHours = diff / (60 * 60 * 1000) % 24;
+                                                                                   long diffDays = diff / (24 * 60 * 60 * 1000);
 
-                                                    if (diffDays < 1) {
 
-                                                        if (diffHours < 6) {
-                                                            markerData.setCounterPast6Hours(markerData.getCounterPast6Hours() + 1);
+                                                                                   if (diffDays < 1) {
 
-                                                        } else if (diffHours >= 6 && diffHours < 12) {
-                                                            markerData.setCounter6to12(markerData.getCounter6to12() + 1);
-                                                        } else if (diffHours >= 12 && diffHours < 18) {
-                                                            markerData.setCounter12to18(markerData.getCounter12to18() + 1);
-                                                        } else {
-                                                            markerData.setCounter18to24(markerData.getCounter18to24() + 1);
-                                                        }
+                                                                                       if (diffHours < 6) {
+                                                                                           markerData.setCounterPast6Hours(markerData.getCounterPast6Hours() + 1);
 
-                                                        markerData.setMasterPostCounter(markerData.getMasterPostCounter() + 1);
+                                                                                       } else if (diffHours >= 6 && diffHours < 12) {
+                                                                                           markerData.setCounter6to12(markerData.getCounter6to12() + 1);
+                                                                                       } else if (diffHours >= 12 && diffHours < 18) {
+                                                                                           markerData.setCounter12to18(markerData.getCounter12to18() + 1);
+                                                                                       } else {
+                                                                                           markerData.setCounter18to24(markerData.getCounter18to24() + 1);
+                                                                                       }
 
+                                                                                       markerData.setMasterPostCounter(markerData.getMasterPostCounter() + 1);
 
-                                                    } else {
-                                                        markerData.setMasterPostCounter(markerData.getMasterPostCounter() + 1);
-                                                    }
 
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
-                                                }
+                                                                                   } else {
+                                                                                       markerData.setMasterPostCounter(markerData.getMasterPostCounter() + 1);
+                                                                                   }
 
-                                            try {
-                                                geoNest = obj2.getJSONObject("caption").toString(); //RESOURCE OBJECT
-                                                obj3 = new JSONObject(geoNest);
-                                                postText = obj3.getString("text");
-                                            }
-                                            catch(Exception e){
-                                                postText = "";
-                                            }
+                                                                               } catch (Exception e) {
+                                                                                   e.printStackTrace();
+                                                                               }
 
+                                                                               try {
+                                                                                   geoNest = obj2.getJSONObject("caption").toString(); //RESOURCE OBJECT
+                                                                                   obj3 = new JSONObject(geoNest);
+                                                                                   postText = obj3.getString("text");
+                                                                               }
+                                                                               catch(Exception e){
+                                                                                   postText = "";
+                                                                               }
 
-                                            geoNest = obj2.getJSONObject("user").toString(); //RESOURCE OBJECT
-                                            obj3 = new JSONObject(geoNest);
-                                            userName = obj3.getString("username");
-                                            profilePicUrl = obj3.getString("profile_picture");
-                                            ImageDownloader task2 = new ImageDownloader();
-                                            try {
-                                                // It then executes the task of image downloader
-                                                profileBitImg = task2.execute(profilePicUrl).get();
 
-                                            } catch (Exception e) {
+                                                                               geoNest = obj2.getJSONObject("user").toString(); //RESOURCE OBJECT
+                                                                               obj3 = new JSONObject(geoNest);
+                                                                               userName = obj3.getString("username");
+                                                                               profilePicUrl = obj3.getString("profile_picture");
+                                                                               ImageDownloader task2 = new ImageDownloader();
+                                                                               try {
+                                                                                   // It then executes the task of image downloader
+                                                                                   profileBitImg = task2.execute(profilePicUrl).get();
 
-                                                e.printStackTrace();
-                                            }
+                                                                               } catch (Exception e) {
 
-                                            String uiDate = SplashScreen.uiFormatter.format(dateTrans);
-                                            String source = "Instagram";
+                                                                                   e.printStackTrace();
+                                                                               }
 
+                                                                               String uiDate = SplashScreen.uiFormatter.format(dateTrans);
+                                                                               String source = "Instagram";
 
-                                            POISocialMediaPosts post = new POISocialMediaPosts(source, uiDate, userName, postText, imageURL, bitImg, profileBitImg);
-                                            markerData.addPosts(post);
 
-                                        }
+                                                                               POISocialMediaPosts post = new POISocialMediaPosts(source, uiDate, userName, postText, imageURL, bitImg, profileBitImg);
+                                                                               markerData.addPosts(post);
 
-                                    } else {
+                                                                           }
 
-                                        Log.i("Posts", "Zero posts");
-                                    }
+                                                                       } else {
 
-                                } catch (JSONException e) {
+                                                                           Log.i("Posts", "Zero posts");
+                                                                       }
 
-                                    Log.i("JSON Search Status", "Something went wrong in JSON process.Check array access");
+                                                                   } catch (JSONException e) {
 
-                                }
+                                                                       Log.i("JSON Search Status", "Something went wrong in JSON process.Check array access");
 
-                            }
-                        }
+                                                                   }
 
+                                                               }
+                                                           }
 
-                        Intent intent = new Intent(MapsActivity.this, PlaceDetail.class);
-                        intent.putExtra("Place", marker.getTitle());
-                        startActivity(intent);
-                    }
 
-            }
-            }
+                                                           Intent intent = new Intent(MapsActivity.this, PlaceDetail.class);
+                                                           intent.putExtra("Place", marker.getTitle());
+                                                           startActivity(intent);
+                                                       }
 
-            );
+                                                   }
+                                               }
+
+        );
 
 
     }

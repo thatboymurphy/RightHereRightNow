@@ -6,6 +6,7 @@
 
     >
 
+
     <ImageView
         android:id="@+id/info_window_image"
         android:layout_width="200dp"
@@ -35,12 +36,6 @@
         android:layout_marginBottom="10dp"
         />
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:id="@+id/wheel"
-        android:paddingTop="10dp"
-       />
+
 
 </LinearLayout>

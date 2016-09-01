@@ -2,14 +2,16 @@
 * Author: Stuart Murphy
 * Student ID: 10046828
 * Project: Masters Thesis
-* Date: 08/08/2016
+* Date: 29/08/2016
+*
+* Most Rec2nt 29th aug
 *
 * Description:
-* The following code is work in progress for my mobile application presentation. It is due
-* completion before the 29th of August 2016. This is for supervisors viewing only to see how the
-* code is currently looking.
+* This mobile application is for a MSc in Interactive Media in the University Of Limerick, The app
+* is capable of displaying near by places of interest and also present any recent social media activity
+* from that location. The idea is to present users with the most recent ongoings at places they are
+* near by right now. This work will stil lbe in development for the coming months.
 * */
-
 package com.stuart.righthererightnow;
 
 import android.Manifest;
@@ -100,7 +102,7 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
                     for(int i = 0; i < types.length; i++)
                     {
                         //if the the type Bar or Night Club is used assing it as Drink
-                  if(types[i].equalsIgnoreCase("Bar")||types[i].equalsIgnoreCase("Night Club"))
+                        if(types[i].equalsIgnoreCase("Bar")||types[i].equalsIgnoreCase("Night Club"))
                         {
 
                             selectedPlaces.add(place);
@@ -204,7 +206,7 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
                     {
 
                         if (types[i].equalsIgnoreCase("Amusement Park")
-                            || types[i].equalsIgnoreCase("Art Gallery")
+                                || types[i].equalsIgnoreCase("Art Gallery")
                                 || types[i].equalsIgnoreCase("Casino")
                                 || types[i].equalsIgnoreCase("Zoo")
                                 || types[i].equalsIgnoreCase("Stadium")
@@ -247,9 +249,13 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
                         selectedPlaces.add(place);
                     }
 
+                }
+               /* if(selectedPlaces.size() != -1 && selectedPlaces.size() != 0){
 
+                    Toast.makeText(getApplicationContext(), "Nothing from the top POIs in this area", Toast.LENGTH_SHORT).show();
 
                 }
+                */
 
 
                 searchMode = false;
@@ -278,7 +284,7 @@ public class MainActivity extends AppCompatActivity { //changed from extends App
                 }
 
                 if(selectedPlaces.size() == 0 || selectedPlaces.size()==-1){
-                    Toast.makeText(getApplicationContext(), "You have no favourites saved :(", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "You have no favourites saved :(", Toast.LENGTH_SHORT).show();
                 }
             }
 

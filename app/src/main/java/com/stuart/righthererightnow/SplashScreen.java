@@ -2,14 +2,15 @@
 * Author: Stuart Murphy
 * Student ID: 10046828
 * Project: Masters Thesis
-* Date: 08/08/2016
+* Date: 29/08/2016
 *
-* Most Recnt 17th aug
+* Most Rec2nt 29th aug
 *
 * Description:
-* The following code is work in progress for my mobile application presentation. It is due
-* completion before the 29th of August 2016. This is for supervisors viewing only to see how the
-* code is currently looking.
+* This mobile application is for a MSc in Interactive Media in the University Of Limerick, The app
+* is capable of displaying near by places of interest and also present any recent social media activity
+* from that location. The idea is to present users with the most recent ongoings at places they are
+* near by right now. This work will stil lbe in development for the coming months.
 * */
 
 package com.stuart.righthererightnow;
@@ -85,7 +86,7 @@ public class SplashScreen extends Activity implements LocationListener {
 
     static String accessToken = "543153997.3bb3331.66f453d8e7d24f638824352145af3263";
     static String currentDateFormatted = "";
-   static  DateFormat formatter = null;
+    static  DateFormat formatter = null;
 
     static DateFormat uiFormatter = null;
 
@@ -118,16 +119,16 @@ public class SplashScreen extends Activity implements LocationListener {
         currentDateFormatted = formatter.format(now);
 
 
-         call1 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
+        call1 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
                 lat.toString() + "," + lng.toString() + "&radius=3000&type=" + drink
                 +"&key="+browserKey;
-         call2 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
+        call2 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
                 lat.toString() + "," + lng.toString() + "&radius=3000&type=" + food +
                 "&key="+browserKey;
-         call3 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
+        call3 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
                 lat.toString() + "," + lng.toString() + "&radius=3000&type=" + coffee +
                 "&key="+browserKey;
-         call4 ="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
+        call4 ="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
                 lat.toString() + "," + lng.toString() + "&radius=3000&type=" + fun +
                 "&key="+browserKey;
 
@@ -201,28 +202,28 @@ public class SplashScreen extends Activity implements LocationListener {
 
             try {
 
-                        url = new URL(urls[0]);
-                        urlConnection = (HttpURLConnection) url.openConnection();
-                        in = urlConnection.getInputStream();
-                        InputStreamReader reader = new InputStreamReader(in);
-                        int data = reader.read();
-                        while (data != -1) {
-                            char current = (char) data;
-                            response += current;
-                            data = reader.read();
-                        }
+                url = new URL(urls[0]);
+                urlConnection = (HttpURLConnection) url.openConnection();
+                in = urlConnection.getInputStream();
+                InputStreamReader reader = new InputStreamReader(in);
+                int data = reader.read();
+                while (data != -1) {
+                    char current = (char) data;
+                    response += current;
+                    data = reader.read();
+                }
                 in.close();
                 urlConnection.disconnect();
 
 
-                    return response;
+                return response;
 
-                } catch (Exception e) {
-                    Log.i("Google Places Search", "Error reading source code of URL");
-                }
+            } catch (Exception e) {
+                Log.i("Google Places Search", "Error reading source code of URL");
+            }
 
 
-                return null;
+            return null;
 
         }
 
@@ -231,191 +232,191 @@ public class SplashScreen extends Activity implements LocationListener {
             // This where where we use JSON technique to pull objects and what we need from the string passed down
             super.onPostExecute(response);
             Log.i("Status", "Beginning Parse");
-                try {
+            try {
 
-                    // The entire response of the URL page is made into an JSON object
-                    JSONObject obj1 = new JSONObject(response);
+                // The entire response of the URL page is made into an JSON object
+                JSONObject obj1 = new JSONObject(response);
 
-                    // Within in the entire response are arrays that hold nest information
-                    JSONArray jsonarr = obj1.getJSONArray("results");
+                // Within in the entire response are arrays that hold nest information
+                JSONArray jsonarr = obj1.getJSONArray("results");
 
-                    // Once an array of JSONObjects are created, we can iterate though the array
-                    // searching for objects we require within
-                    for (int i = 0; i < jsonarr.length(); i++) {
-                        String resource = jsonarr.getJSONObject(i).toString();
-                        JSONObject obj2 = new JSONObject(resource);
+                // Once an array of JSONObjects are created, we can iterate though the array
+                // searching for objects we require within
+                for (int i = 0; i < jsonarr.length(); i++) {
+                    String resource = jsonarr.getJSONObject(i).toString();
+                    JSONObject obj2 = new JSONObject(resource);
 
-                        String name = "";
-                        try {
-                            // Getting the name of a place
-                            name = obj2.getString("name");
-                        } catch (Exception e) {
-                            name = "No Found Name";
-                        }
-
-                        // Getting the address of a place, try/catch as some palces do not have address
-                        String address = "";
-                        try {
-                            address = obj2.getString("vicinity");
-                           //address.replace(",","\n");
-                        } catch (Exception e) {
-                            address = "No Found Address";
-                        }
-
-                        String locationLng = "";
-                        String locationLat = "";
-                        // Getting the location of a place
-                        try {
-                            String geoNest = obj2.getJSONObject("geometry").toString();
-                            JSONObject obj3 = new JSONObject(geoNest);
-                            locationLng = obj3.getJSONObject("location").getString("lng");
-                            locationLat = obj3.getJSONObject("location").getString("lat");
-                        } catch (Exception e) {
-                            locationLng = "No Found Longitude";
-                            locationLat = "No Found Latitude";
-                        }
-
-                        // Getting the types of a place
-                        String[] allTypes = null;
-                        try {
-                            JSONArray types = (JSONArray) ((JSONObject) jsonarr.get(i)).get("types");
-                            String result = types.toString();
-                            result = result.substring(1, result.length() - 1).replace("_"," ").replace("\"","");
-                            allTypes = result.split(",");
-
-                            //allTypes = sortTypes(allTypes);
-                        } catch (JSONException e) {
-                            allTypes = null;
-                        }
-
-                        // Assign POI an icon
-                        int poiIcon, poiFavdMarker, poiMarker;
-                        if (allTypes[0].equalsIgnoreCase("Bar") || allTypes[0].equalsIgnoreCase("Night Club")) {
-                            poiIcon = R.drawable.beerblack;
-                            poiFavdMarker = R.drawable.beerfav;
-                            poiMarker = R.drawable.beernormal;
-
-                        } else if (allTypes[0].equalsIgnoreCase("Restaurant")||allTypes[0].equalsIgnoreCase("Food")||allTypes[0].equalsIgnoreCase("Meal Takeaway")||allTypes[0].equalsIgnoreCase("Meal Delivery")) {
-                            poiIcon = R.drawable.foodblack;
-                            poiFavdMarker = R.drawable.foodfav;
-                            poiMarker = R.drawable.foodnormal;
-
-                        } else if (allTypes[0].equalsIgnoreCase("Cafe")) {
-                            poiIcon = R.drawable.coffeeblack;
-                            poiFavdMarker = R.drawable.coffeefav;
-                            poiMarker = R.drawable.coffeenorm;
-
-                        } else {
-                            poiIcon = R.drawable.otherblack;
-                            poiFavdMarker = R.drawable.otherfav;
-                            poiMarker = R.drawable.othernorm;
-
-                        }
-
-                        // placesg the reference for a palces photo
-                        String photoRef = "";
-                        try {
-                            JSONArray jsonarr2 = obj2.getJSONArray("photos");
-                            for (int j = 0; j < jsonarr2.length(); j++) {
-                                String resource2 = jsonarr2.getJSONObject(j).toString();
-                                JSONObject obj4 = new JSONObject(resource2);
-                                photoRef = obj4.getString("photo_reference");
-                            }
-                        } catch (Exception e) {
-                            // Keep it empty so a later condition tells the UI there is no image available
-                            photoRef = "";
-                        }
-
-                        // Using the reference to get the actual image
-                        ImageDownloader task = new ImageDownloader();
-                        Bitmap myImg = null;
-                        try {
-                            if (photoRef != "") {
-                                // It then executes the task of image downloader
-                                myImg = task.execute("https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&maxheight=250&phot" +
-                                        "oreference=" + photoRef + "&key=AIzaSyCmcj932D55W-U7bk2rPDmy0khT_u9JfJA\n").get();
-                            } else {
-                                myImg = task.execute("http://www.askdeb.com/wp-content/uploads/2013/07/No-Photo-Available.png").get();
-                            }
-
-
-                        } catch (Exception e) {
-
-                            e.printStackTrace();
-                        }
-
-                        String rating = "";
-                        try {
-                            // Getting the name of a place
-                            rating = obj2.getString("rating");
-                        } catch (Exception e) {
-                            rating = "No Rating Set";
-                        }
-
-                        String openStatus = "";
-                        // Getting the location of a place
-                        try {
-                            String geoNest = obj2.getJSONObject("opening_hours").toString();
-                            JSONObject obj3 = new JSONObject(geoNest);
-                            openStatus = obj3.getString("open_now");
-
-                            if(openStatus.equals("true")){
-                                openStatus = "OPEN";
-                            }
-                            else{
-                                openStatus = "CLOSED";
-                            }
-
-                        } catch (Exception e) {
-                            openStatus = "It is a mystery!";
-                        }
-
-                        // Calculate the POIs distance from user
-                        double roundUp = CalculateLatLngDistance.distance(newUserLocation.latitude, newUserLocation.longitude, Double.parseDouble(locationLat), Double.parseDouble(locationLng), "K");
-
-                        int masterPostCounter = 0;
-                        int counterPast6Hours = 0;
-                        int counter6to12 = 0;
-                        int counter12to18 = 0;
-                        int counter18to24 = 0;
-
-                        ArrayList<POISocialMediaPosts> userPosts = new ArrayList<POISocialMediaPosts>();
-
-
-                        // If notihng is on list...add away
-                        if (masterList.size() <= 0) {
-
-                            Places newPOI = new Places(name,rating,openStatus, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), photoRef, myImg, poiIcon,poiMarker,poiFavdMarker, roundUp,
-                                    masterPostCounter, counterPast6Hours, counter6to12, counter12to18, counter18to24, userPosts);
-                            masterList.add(newPOI);
-
-
-                        }
-                        // To avoid adding duplicates i.e. some pubs are also restaurants
-                        else {
-                            boolean isOnList = false;
-                            for (Places place : masterList) {
-                                if (place.getPlaceName().equals(name)) {
-                                    isOnList = true;
-                                    break; //break here if it finds one copy
-                                }
-                            }
-                            // Only add it if it is not already on the list
-                            if (!isOnList) {
-                                POISocialMediaPosts post = new POISocialMediaPosts();
-                                Places newPOI = new Places(name, rating,openStatus, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), photoRef, myImg, poiIcon,poiMarker,poiFavdMarker, roundUp,
-                                        masterPostCounter, counterPast6Hours, counter6to12, counter12to18, counter18to24, userPosts);
-                                masterList.add(newPOI);
-                            }
-                        }
+                    String name = "";
+                    try {
+                        // Getting the name of a place
+                        name = obj2.getString("name");
+                    } catch (Exception e) {
+                        name = "No Found Name";
                     }
 
-                    counter++;
-                    Log.i("JSON Search Status", " Request Complete");
+                    // Getting the address of a place, try/catch as some palces do not have address
+                    String address = "";
+                    try {
+                        address = obj2.getString("vicinity");
+                        //address.replace(",","\n");
+                    } catch (Exception e) {
+                        address = "No Found Address";
+                    }
 
-                } catch (JSONException e) {
-                    Log.i("JSON Search Status", "Something went wrong in JSON process.Check array access");
+                    String locationLng = "";
+                    String locationLat = "";
+                    // Getting the location of a place
+                    try {
+                        String geoNest = obj2.getJSONObject("geometry").toString();
+                        JSONObject obj3 = new JSONObject(geoNest);
+                        locationLng = obj3.getJSONObject("location").getString("lng");
+                        locationLat = obj3.getJSONObject("location").getString("lat");
+                    } catch (Exception e) {
+                        locationLng = "No Found Longitude";
+                        locationLat = "No Found Latitude";
+                    }
+
+                    // Getting the types of a place
+                    String[] allTypes = null;
+                    try {
+                        JSONArray types = (JSONArray) ((JSONObject) jsonarr.get(i)).get("types");
+                        String result = types.toString();
+                        result = result.substring(1, result.length() - 1).replace("_"," ").replace("\"","");
+                        allTypes = result.split(",");
+
+                        //allTypes = sortTypes(allTypes);
+                    } catch (JSONException e) {
+                        allTypes = null;
+                    }
+
+                    // Assign POI an icon
+                    int poiIcon, poiFavdMarker, poiMarker;
+                    if (allTypes[0].equalsIgnoreCase("Bar") || allTypes[0].equalsIgnoreCase("Night Club")) {
+                        poiIcon = R.drawable.beerblack;
+                        poiFavdMarker = R.drawable.beerfav;
+                        poiMarker = R.drawable.beernormal;
+
+                    } else if (allTypes[0].equalsIgnoreCase("Restaurant")||allTypes[0].equalsIgnoreCase("Food")||allTypes[0].equalsIgnoreCase("Meal Takeaway")||allTypes[0].equalsIgnoreCase("Meal Delivery")) {
+                        poiIcon = R.drawable.foodblack;
+                        poiFavdMarker = R.drawable.foodfav;
+                        poiMarker = R.drawable.foodnormal;
+
+                    } else if (allTypes[0].equalsIgnoreCase("Cafe")) {
+                        poiIcon = R.drawable.coffeeblack;
+                        poiFavdMarker = R.drawable.coffeefav;
+                        poiMarker = R.drawable.coffeenorm;
+
+                    } else {
+                        poiIcon = R.drawable.otherblack;
+                        poiFavdMarker = R.drawable.otherfav;
+                        poiMarker = R.drawable.othernorm;
+
+                    }
+
+                    // placesg the reference for a palces photo
+                    String photoRef = "";
+                    try {
+                        JSONArray jsonarr2 = obj2.getJSONArray("photos");
+                        for (int j = 0; j < jsonarr2.length(); j++) {
+                            String resource2 = jsonarr2.getJSONObject(j).toString();
+                            JSONObject obj4 = new JSONObject(resource2);
+                            photoRef = obj4.getString("photo_reference");
+                        }
+                    } catch (Exception e) {
+                        // Keep it empty so a later condition tells the UI there is no image available
+                        photoRef = "";
+                    }
+
+                    // Using the reference to get the actual image
+                    ImageDownloader task = new ImageDownloader();
+                    Bitmap myImg = null;
+                    try {
+                        if (photoRef != "") {
+                            // It then executes the task of image downloader
+                            myImg = task.execute("https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&maxheight=250&phot" +
+                                    "oreference=" + photoRef + "&key=AIzaSyCmcj932D55W-U7bk2rPDmy0khT_u9JfJA\n").get();
+                        } else {
+                            myImg = task.execute("http://www.askdeb.com/wp-content/uploads/2013/07/No-Photo-Available.png").get();
+                        }
+
+
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+                    }
+
+                    String rating = "";
+                    try {
+                        // Getting the name of a place
+                        rating = obj2.getString("rating");
+                    } catch (Exception e) {
+                        rating = "No Rating Set";
+                    }
+
+                    String openStatus = "";
+                    // Getting the location of a place
+                    try {
+                        String geoNest = obj2.getJSONObject("opening_hours").toString();
+                        JSONObject obj3 = new JSONObject(geoNest);
+                        openStatus = obj3.getString("open_now");
+
+                        if(openStatus.equals("true")){
+                            openStatus = "OPEN";
+                        }
+                        else{
+                            openStatus = "CLOSED";
+                        }
+
+                    } catch (Exception e) {
+                        openStatus = "It is a mystery!";
+                    }
+
+                    // Calculate the POIs distance from user
+                    double roundUp = CalculateLatLngDistance.distance(newUserLocation.latitude, newUserLocation.longitude, Double.parseDouble(locationLat), Double.parseDouble(locationLng), "K");
+
+                    int masterPostCounter = 0;
+                    int counterPast6Hours = 0;
+                    int counter6to12 = 0;
+                    int counter12to18 = 0;
+                    int counter18to24 = 0;
+
+                    ArrayList<POISocialMediaPosts> userPosts = new ArrayList<POISocialMediaPosts>();
+
+
+                    // If notihng is on list...add away
+                    if (masterList.size() <= 0) {
+
+                        Places newPOI = new Places(name,rating,openStatus, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), photoRef, myImg, poiIcon,poiMarker,poiFavdMarker, roundUp,
+                                masterPostCounter, counterPast6Hours, counter6to12, counter12to18, counter18to24, userPosts);
+                        masterList.add(newPOI);
+
+
+                    }
+                    // To avoid adding duplicates i.e. some pubs are also restaurants
+                    else {
+                        boolean isOnList = false;
+                        for (Places place : masterList) {
+                            if (place.getPlaceName().equals(name)) {
+                                isOnList = true;
+                                break; //break here if it finds one copy
+                            }
+                        }
+                        // Only add it if it is not already on the list
+                        if (!isOnList) {
+                            POISocialMediaPosts post = new POISocialMediaPosts();
+                            Places newPOI = new Places(name, rating,openStatus, allTypes, address, new LatLng(Double.parseDouble(locationLat), Double.parseDouble(locationLng)), photoRef, myImg, poiIcon,poiMarker,poiFavdMarker, roundUp,
+                                    masterPostCounter, counterPast6Hours, counter6to12, counter12to18, counter18to24, userPosts);
+                            masterList.add(newPOI);
+                        }
+                    }
                 }
+
+                counter++;
+                Log.i("JSON Search Status", " Request Complete");
+
+            } catch (JSONException e) {
+                Log.i("JSON Search Status", "Something went wrong in JSON process.Check array access");
+            }
 
 
 
@@ -428,8 +429,8 @@ public class SplashScreen extends Activity implements LocationListener {
 
                 for(Places place: masterList) {
 
-                      userRecentMedia = "https://api.instagram.com/v1/media/search?lat=" +
-                            place.getPlacePosition().latitude + "&lng=" + place.getPlacePosition().longitude + "&distance=140&access_token=" + accessToken;
+                    userRecentMedia = "https://api.instagram.com/v1/media/search?lat=" +
+                            place.getPlacePosition().latitude + "&lng=" + place.getPlacePosition().longitude + "&distance=140&access_token=" + accessToken+"&count=5";
 
                     try
                     {
@@ -473,11 +474,11 @@ public class SplashScreen extends Activity implements LocationListener {
 
                                 } catch (Exception e) {
 
-                                        e.printStackTrace();
+                                    e.printStackTrace();
                                 }
 
 
-                              date = obj2.getString("created_time");
+                                date = obj2.getString("created_time");
                                 long x = Long.parseLong(date) * 1000;
                                 Date dateTrans = new Date(x);
 
@@ -597,11 +598,11 @@ public class SplashScreen extends Activity implements LocationListener {
 
 
 
-                    for(Places place: masterList) {
-                       String test1 = place.getPlaceName();
-                        int test2 =  place.getPosts().size();
-                        Log.i("Tester  ", test1 + "    " + test2);
-                    }
+                for(Places place: masterList) {
+                    String test1 = place.getPlaceName();
+                    int test2 =  place.getPosts().size();
+                    Log.i("Tester  ", test1 + "    " + test2);
+                }
 
 
                 Intent i = new Intent(SplashScreen.this, MainActivity.class);
